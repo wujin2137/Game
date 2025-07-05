@@ -24,19 +24,20 @@ class Level:
             "resource/image/background/background2.webp",    # 第1关
             "resource/image/background/background3.webp",    # 第2关
             "resource/image/background/background4.webp",    # 第3关
-            "resource/image/background/background1.webp",    # 第4关
-            "resource/image/background/background1.webp",    # 第5关
-            "resource/image/background/background1.webp",    # 第6关
-            "resource/image/background/background1.webp",    # 第7关
-            "resource/image/background/background1.webp",    # 第8关
-            "resource/image/background/background1.webp"     # 第9关
+            "resource/image/background/background5.webp",    # 第4关
+            "resource/image/background/background6.webp",    # 第5关
+            "resource/image/background/background7.webp",    # 第6关
+            "resource/image/background/background8.webp",    # 第7关
+            "resource/image/background/background9.webp",    # 第8关
+            "resource/image/background/background10.webp"     # 第9关
         ]
         return background_files[self.level_num]
 
     # 加载背景图并返回缩放后的Surface（保持原比例，填充空白）
     def load_background(self):
         try:
-            original_bg = pygame.image.load("resource/image/background/background1.webp").convert()
+            # 使用 self.background_path 加载对应关卡的背景图
+            original_bg = pygame.image.load(self.background_path).convert()
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
             if bg_ratio > screen_ratio:
@@ -153,16 +154,16 @@ class Level:
 
     # 其他关卡设置方法（level_3 到 level_9）保持与之前相同...
     def setup_level_3(self):
-        self.time_limit = 150
+        self.time_limit = 120
 
         # 地面
-        self.platforms.add(Platform(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50, "platform_2"))
+        self.platforms.add(Platform(0, 550, 800, 50, "platform_2"))
 
         # 平台
-        self.platforms.add(Platform(150, 470, 150, 20, "platform_1"))
-        self.platforms.add(Platform(350, 420, 100, 20, "platform_1"))
-        self.platforms.add(Platform(550, 370, 100, 20, "platform_1"))
-        self.platforms.add(Platform(750, 320, 100, 20, "platform_1"))
+        self.platforms.add(Platform(100, 450, 100, 20, "platform_1"))
+        self.platforms.add(Platform(300, 400, 100, 20, "platform_1"))
+        self.platforms.add(Platform(500, 350, 100, 20, "platform_1"))
+        self.platforms.add(Platform(700, 300, 100, 20, "platform_1"))
 
         # 墙壁
         self.platforms.add(Platform(200, 300, 20, 100, "platform_1"))
@@ -170,10 +171,10 @@ class Level:
         self.platforms.add(Platform(600, 300, 20, 100, "platform_1"))
 
         # 金币
-        self.coins.add(Coin(190, 430))
-        self.coins.add(Coin(390, 400))
-        self.coins.add(Coin(590, 350))
-        self.coins.add(Coin(790, 300))
+        self.coins.add(Coin(140, 430))
+        self.coins.add(Coin(340, 380))
+        self.coins.add(Coin(540, 330))
+        self.coins.add(Coin(740, 280))
 
         # 障碍物
         self.obstacles.add(Obstacle(250, 300, "obstacle_1"))
@@ -186,337 +187,325 @@ class Level:
         self.items.add(Item(620, 320, "shield"))
 
         # 终点
-        self.goal = Goal(950, 500)
+        self.goal = Goal(750, 250)
 
     def setup_level_4(self):
-        self.time_limit = 120
+        self.time_limit = 100
 
         # 地面
-        self.platforms.add(Platform(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50, "platform_2"))
+        self.platforms.add(Platform(0, 550, 800, 50, "platform_2"))
 
         # 平台
-        self.platforms.add(Platform(150, 470, 150, 20, "platform_1"))
-        self.platforms.add(Platform(350, 420, 100, 20, "platform_1"))
-        self.platforms.add(Platform(550, 370, 100, 20, "platform_1"))
-        self.platforms.add(Platform(750, 320, 100, 20, "platform_1"))
-        self.platforms.add(Platform(950, 270, 100, 20, "platform_1"))
+        self.platforms.add(Platform(100, 450, 100, 20, "platform_1"))
+        self.platforms.add(Platform(300, 400, 100, 20, "platform_1"))
+        self.platforms.add(Platform(500, 350, 100, 20, "platform_1"))
+        self.platforms.add(Platform(700, 300, 100, 20, "platform_1"))
+        self.platforms.add(Platform(300, 250, 100, 20, "platform_1"))
 
         # 墙壁
         self.platforms.add(Platform(200, 300, 20, 100, "platform_1"))
         self.platforms.add(Platform(400, 350, 20, 80, "platform_1"))
         self.platforms.add(Platform(600, 300, 20, 100, "platform_1"))
-        self.platforms.add(Platform(800, 250, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1000, 200, 20, 100, "platform_1"))
+        self.platforms.add(Platform(400, 200, 20, 100, "platform_1"))
 
         # 金币
-        self.coins.add(Coin(190, 430))
-        self.coins.add(Coin(390, 400))
-        self.coins.add(Coin(590, 350))
-        self.coins.add(Coin(790, 300))
-        self.coins.add(Coin(990, 250))
+        self.coins.add(Coin(140, 430))
+        self.coins.add(Coin(340, 380))
+        self.coins.add(Coin(540, 330))
+        self.coins.add(Coin(740, 280))
+        self.coins.add(Coin(340, 230))
 
         # 障碍物
         self.obstacles.add(Obstacle(250, 300, "obstacle_1"))
-        self.obstacles.add(Obstacle(450, 350, "obstacle_1"))
+        self.obstacles.add(Obstacle(450, 350, "obstacle_2"))
         self.obstacles.add(Obstacle(650, 300, "obstacle_1"))
-        self.obstacles.add(Obstacle(850, 250, "obstacle_1"))
-        self.obstacles.add(Obstacle(1050, 200, "obstacle_1"))
+        self.obstacles.add(Obstacle(450, 200, "obstacle_1"))
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
         self.items.add(Item(420, 370, "jump_boost"))
         self.items.add(Item(620, 320, "shield"))
-        self.items.add(Item(820, 270, "invisibility"))
+        self.items.add(Item(320, 270, "invisibility"))
 
         # 终点
-        self.goal = Goal(1150, 500)
+        self.goal = Goal(750, 200)
 
     def setup_level_5(self):
-        self.time_limit = 120
+        self.time_limit = 90
 
         # 地面
-        self.platforms.add(Platform(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50, "platform_2"))
+        self.platforms.add(Platform(0, 550, 800, 50, "platform_2"))
 
         # 平台
-        self.platforms.add(Platform(150, 470, 150, 20, "platform_1"))
-        self.platforms.add(Platform(350, 420, 100, 20, "platform_1"))
-        self.platforms.add(Platform(550, 370, 100, 20, "platform_1"))
-        self.platforms.add(Platform(750, 320, 100, 20, "platform_1"))
-        self.platforms.add(Platform(950, 270, 100, 20, "platform_1"))
-        self.platforms.add(Platform(1150, 220, 100, 20, "platform_1"))
+        self.platforms.add(Platform(100, 450, 100, 20, "platform_1"))
+        self.platforms.add(Platform(300, 400, 100, 20, "platform_1"))
+        self.platforms.add(Platform(500, 350, 100, 20, "platform_1"))
+        self.platforms.add(Platform(700, 300, 100, 20, "platform_1"))
+        self.platforms.add(Platform(300, 250, 100, 20, "platform_1"))
+        self.platforms.add(Platform(500, 200, 100, 20, "platform_1"))
 
         # 墙壁
         self.platforms.add(Platform(200, 300, 20, 100, "platform_1"))
         self.platforms.add(Platform(400, 350, 20, 80, "platform_1"))
         self.platforms.add(Platform(600, 300, 20, 100, "platform_1"))
-        self.platforms.add(Platform(800, 250, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1000, 200, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1200, 150, 20, 100, "platform_1"))
+        self.platforms.add(Platform(400, 200, 20, 100, "platform_1"))
+        self.platforms.add(Platform(600, 150, 20, 100, "platform_1"))
 
         # 金币
-        self.coins.add(Coin(190, 430))
-        self.coins.add(Coin(390, 400))
-        self.coins.add(Coin(590, 350))
-        self.coins.add(Coin(790, 300))
-        self.coins.add(Coin(990, 250))
-        self.coins.add(Coin(1190, 200))
+        self.coins.add(Coin(140, 430))
+        self.coins.add(Coin(340, 380))
+        self.coins.add(Coin(540, 330))
+        self.coins.add(Coin(740, 280))
+        self.coins.add(Coin(340, 230))
+        self.coins.add(Coin(540, 180))
 
         # 障碍物
         self.obstacles.add(Obstacle(250, 300, "obstacle_1"))
-        self.obstacles.add(Obstacle(450, 350, "obstacle_1"))
+        self.obstacles.add(Obstacle(450, 350, "obstacle_2"))
         self.obstacles.add(Obstacle(650, 300, "obstacle_1"))
-        self.obstacles.add(Obstacle(850, 250, "obstacle_1"))
-        self.obstacles.add(Obstacle(1050, 200, "obstacle_1"))
-        self.obstacles.add(Obstacle(1250, 150, "obstacle_1"))
+        self.obstacles.add(Obstacle(450, 200, "obstacle_2"))
+        self.obstacles.add(Obstacle(650, 150, "obstacle_1"))
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
         self.items.add(Item(420, 370, "jump_boost"))
         self.items.add(Item(620, 320, "shield"))
-        self.items.add(Item(820, 270, "invisibility"))
-        self.items.add(Item(1020, 220, "time_stop"))
+        self.items.add(Item(320, 270, "invisibility"))
+        self.items.add(Item(520, 220, "time_stop"))
 
         # 终点
-        self.goal = Goal(1350, 500)
+        self.goal = Goal(750, 150)
 
     def setup_level_6(self):
-        self.time_limit = 120
+        self.time_limit = 80
 
         # 地面
-        self.platforms.add(Platform(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50, "platform_2"))
+        self.platforms.add(Platform(0, 550, 800, 50, "platform_2"))
 
         # 平台
-        self.platforms.add(Platform(150, 470, 150, 20, "platform_1"))
-        self.platforms.add(Platform(350, 420, 100, 20, "platform_1"))
-        self.platforms.add(Platform(550, 370, 100, 20, "platform_1"))
-        self.platforms.add(Platform(750, 320, 100, 20, "platform_1"))
-        self.platforms.add(Platform(950, 270, 100, 20, "platform_1"))
-        self.platforms.add(Platform(1150, 220, 100, 20, "platform_1"))
-        self.platforms.add(Platform(1350, 170, 100, 20, "platform_1"))
+        self.platforms.add(Platform(100, 450, 100, 20, "platform_1"))
+        self.platforms.add(Platform(300, 400, 100, 20, "platform_1"))
+        self.platforms.add(Platform(500, 350, 100, 20, "platform_1"))
+        self.platforms.add(Platform(700, 300, 100, 20, "platform_1"))
+        self.platforms.add(Platform(300, 250, 100, 20, "platform_1"))
+        self.platforms.add(Platform(500, 200, 100, 20, "platform_1"))
+        self.platforms.add(Platform(700, 150, 100, 20, "platform_1"))
 
         # 墙壁
         self.platforms.add(Platform(200, 300, 20, 100, "platform_1"))
         self.platforms.add(Platform(400, 350, 20, 80, "platform_1"))
         self.platforms.add(Platform(600, 300, 20, 100, "platform_1"))
-        self.platforms.add(Platform(800, 250, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1000, 200, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1200, 150, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1400, 100, 20, 100, "platform_1"))
+        self.platforms.add(Platform(400, 200, 20, 100, "platform_1"))
+        self.platforms.add(Platform(600, 150, 20, 100, "platform_1"))
+        self.platforms.add(Platform(800, 100, 20, 100, "platform_1"))
 
         # 金币
-        self.coins.add(Coin(190, 430))
-        self.coins.add(Coin(390, 400))
-        self.coins.add(Coin(590, 350))
-        self.coins.add(Coin(790, 300))
-        self.coins.add(Coin(990, 250))
-        self.coins.add(Coin(1190, 200))
-        self.coins.add(Coin(1390, 150))
+        self.coins.add(Coin(140, 430))
+        self.coins.add(Coin(340, 380))
+        self.coins.add(Coin(540, 330))
+        self.coins.add(Coin(740, 280))
+        self.coins.add(Coin(340, 230))
+        self.coins.add(Coin(540, 180))
+        self.coins.add(Coin(740, 130))
 
         # 障碍物
         self.obstacles.add(Obstacle(250, 300, "obstacle_1"))
-        self.obstacles.add(Obstacle(450, 350, "obstacle_1"))
+        self.obstacles.add(Obstacle(450, 350, "obstacle_2"))
         self.obstacles.add(Obstacle(650, 300, "obstacle_1"))
-        self.obstacles.add(Obstacle(850, 250, "obstacle_1"))
-        self.obstacles.add(Obstacle(1050, 200, "obstacle_1"))
-        self.obstacles.add(Obstacle(1250, 150, "obstacle_1"))
-        self.obstacles.add(Obstacle(1450, 100, "obstacle_1"))
+        self.obstacles.add(Obstacle(450, 200, "obstacle_2"))
+        self.obstacles.add(Obstacle(650, 150, "obstacle_1"))
+        self.obstacles.add(Obstacle(850, 100, "obstacle_1"))
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
         self.items.add(Item(420, 370, "jump_boost"))
         self.items.add(Item(620, 320, "shield"))
-        self.items.add(Item(820, 270, "invisibility"))
-        self.items.add(Item(1020, 220, "time_stop"))
-        self.items.add(Item(1220, 170, "double_jump"))
+        self.items.add(Item(320, 270, "invisibility"))
+        self.items.add(Item(520, 220, "time_stop"))
+        self.items.add(Item(720, 170, "double_jump"))
 
         # 终点
-        self.goal = Goal(1550, 500)
+        self.goal = Goal(750, 100)
 
     def setup_level_7(self):
-        self.time_limit = 120
+        self.time_limit = 70
 
         # 地面
-        self.platforms.add(Platform(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50, "platform_2"))
+        self.platforms.add(Platform(0, 550, 800, 50, "platform_2"))
 
         # 平台
-        self.platforms.add(Platform(150, 470, 150, 20, "platform_1"))
-        self.platforms.add(Platform(350, 420, 100, 20, "platform_1"))
-        self.platforms.add(Platform(550, 370, 100, 20, "platform_1"))
-        self.platforms.add(Platform(750, 320, 100, 20, "platform_1"))
-        self.platforms.add(Platform(950, 270, 100, 20, "platform_1"))
-        self.platforms.add(Platform(1150, 220, 100, 20, "platform_1"))
-        self.platforms.add(Platform(1350, 170, 100, 20, "platform_1"))
-        self.platforms.add(Platform(1550, 120, 100, 20, "platform_1"))
+        self.platforms.add(Platform(100, 450, 100, 20, "platform_1"))
+        self.platforms.add(Platform(300, 400, 100, 20, "platform_1"))
+        self.platforms.add(Platform(500, 350, 100, 20, "platform_1"))
+        self.platforms.add(Platform(700, 300, 100, 20, "platform_1"))
+        self.platforms.add(Platform(300, 250, 100, 20, "platform_1"))
+        self.platforms.add(Platform(500, 200, 100, 20, "platform_1"))
+        self.platforms.add(Platform(700, 150, 100, 20, "platform_1"))
+        self.platforms.add(Platform(500, 100, 100, 20, "platform_1"))
 
         # 墙壁
         self.platforms.add(Platform(200, 300, 20, 100, "platform_1"))
         self.platforms.add(Platform(400, 350, 20, 80, "platform_1"))
         self.platforms.add(Platform(600, 300, 20, 100, "platform_1"))
-        self.platforms.add(Platform(800, 250, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1000, 200, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1200, 150, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1400, 100, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1600, 50, 20, 100, "platform_1"))
+        self.platforms.add(Platform(400, 200, 20, 100, "platform_1"))
+        self.platforms.add(Platform(600, 150, 20, 100, "platform_1"))
+        self.platforms.add(Platform(800, 100, 20, 100, "platform_1"))
+        self.platforms.add(Platform(600, 50, 20, 100, "platform_1"))
 
         # 金币
-        self.coins.add(Coin(190, 430))
-        self.coins.add(Coin(390, 400))
-        self.coins.add(Coin(590, 350))
-        self.coins.add(Coin(790, 300))
-        self.coins.add(Coin(990, 250))
-        self.coins.add(Coin(1190, 200))
-        self.coins.add(Coin(1390, 150))
-        self.coins.add(Coin(1590, 100))
+        self.coins.add(Coin(140, 430))
+        self.coins.add(Coin(340, 380))
+        self.coins.add(Coin(540, 330))
+        self.coins.add(Coin(740, 280))
+        self.coins.add(Coin(340, 230))
+        self.coins.add(Coin(540, 180))
+        self.coins.add(Coin(740, 130))
+        self.coins.add(Coin(540, 80))
 
         # 障碍物
         self.obstacles.add(Obstacle(250, 300, "obstacle_1"))
         self.obstacles.add(Obstacle(450, 350, "obstacle_1"))
         self.obstacles.add(Obstacle(650, 300, "obstacle_1"))
-        self.obstacles.add(Obstacle(850, 250, "obstacle_1"))
-        self.obstacles.add(Obstacle(1050, 200, "obstacle_1"))
-        self.obstacles.add(Obstacle(1250, 150, "obstacle_1"))
-        self.obstacles.add(Obstacle(1450, 100, "obstacle_1"))
-        self.obstacles.add(Obstacle(1650, 50, "obstacle_1"))
+        self.obstacles.add(Obstacle(450, 200, "obstacle_1"))
+        self.obstacles.add(Obstacle(650, 150, "obstacle_1"))
+        self.obstacles.add(Obstacle(850, 100, "obstacle_1"))
+        self.obstacles.add(Obstacle(650, 50, "obstacle_1"))
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
         self.items.add(Item(420, 370, "jump_boost"))
         self.items.add(Item(620, 320, "shield"))
-        self.items.add(Item(820, 270, "invisibility"))
-        self.items.add(Item(1020, 220, "time_stop"))
-        self.items.add(Item(1220, 170, "double_jump"))
-        self.items.add(Item(1420, 120, "flight"))
+        self.items.add(Item(320, 270, "invisibility"))
+        self.items.add(Item(520, 220, "time_stop"))
+        self.items.add(Item(720, 170, "double_jump"))
+        self.items.add(Item(520, 120, "flight"))
 
         # 终点
-        self.goal = Goal(1750, 500)
+        self.goal = Goal(750, 50)
 
     def setup_level_8(self):
-        self.time_limit = 120
+        self.time_limit = 60
 
         # 地面
-        self.platforms.add(Platform(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50, "platform_2"))
+        self.platforms.add(Platform(0, 550, 800, 50, "platform_2"))
 
         # 平台
-        self.platforms.add(Platform(150, 470, 150, 20, "platform_1"))
-        self.platforms.add(Platform(350, 420, 100, 20, "platform_1"))
-        self.platforms.add(Platform(550, 370, 100, 20, "platform_1"))
-        self.platforms.add(Platform(750, 320, 100, 20, "platform_1"))
-        self.platforms.add(Platform(950, 270, 100, 20, "platform_1"))
-        self.platforms.add(Platform(1150, 220, 100, 20, "platform_1"))
-        self.platforms.add(Platform(1350, 170, 100, 20, "platform_1"))
-        self.platforms.add(Platform(1550, 120, 100, 20, "platform_1"))
-        self.platforms.add(Platform(1750, 70, 100, 20, "platform_1"))
+        self.platforms.add(Platform(100, 450, 100, 20, "platform_1"))
+        self.platforms.add(Platform(300, 400, 100, 20, "platform_1"))
+        self.platforms.add(Platform(500, 350, 100, 20, "platform_1"))
+        self.platforms.add(Platform(700, 300, 100, 20, "platform_1"))
+        self.platforms.add(Platform(300, 250, 100, 20, "platform_1"))
+        self.platforms.add(Platform(500, 200, 100, 20, "platform_1"))
+        self.platforms.add(Platform(700, 150, 100, 20, "platform_1"))
+        self.platforms.add(Platform(500, 100, 100, 20, "platform_1"))
+        self.platforms.add(Platform(700, 50, 100, 20, "platform_1"))
 
         # 墙壁
         self.platforms.add(Platform(200, 300, 20, 100, "platform_1"))
         self.platforms.add(Platform(400, 350, 20, 80, "platform_1"))
         self.platforms.add(Platform(600, 300, 20, 100, "platform_1"))
-        self.platforms.add(Platform(800, 250, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1000, 200, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1200, 150, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1400, 100, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1600, 50, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1800, 0, 20, 100, "platform_1"))
+        self.platforms.add(Platform(400, 200, 20, 100, "platform_1"))
+        self.platforms.add(Platform(600, 150, 20, 100, "platform_1"))
+        self.platforms.add(Platform(800, 100, 20, 100, "platform_1"))
+        self.platforms.add(Platform(600, 50, 20, 100, "platform_1"))
+        self.platforms.add(Platform(800, 0, 20, 100, "platform_1"))
 
         # 金币
-        self.coins.add(Coin(190, 430))
-        self.coins.add(Coin(390, 400))
-        self.coins.add(Coin(590, 350))
-        self.coins.add(Coin(790, 300))
-        self.coins.add(Coin(990, 250))
-        self.coins.add(Coin(1190, 200))
-        self.coins.add(Coin(1390, 150))
-        self.coins.add(Coin(1590, 100))
-        self.coins.add(Coin(1790, 50))
+        self.coins.add(Coin(140, 430))
+        self.coins.add(Coin(340, 380))
+        self.coins.add(Coin(540, 330))
+        self.coins.add(Coin(740, 280))
+        self.coins.add(Coin(340, 230))
+        self.coins.add(Coin(540, 180))
+        self.coins.add(Coin(740, 130))
+        self.coins.add(Coin(540, 80))
+        self.coins.add(Coin(740, 30))
 
         # 障碍物
         self.obstacles.add(Obstacle(250, 300, "obstacle_1"))
         self.obstacles.add(Obstacle(450, 350, "obstacle_1"))
         self.obstacles.add(Obstacle(650, 300, "obstacle_1"))
-        self.obstacles.add(Obstacle(850, 250, "obstacle_1"))
-        self.obstacles.add(Obstacle(1050, 200, "obstacle_1"))
-        self.obstacles.add(Obstacle(1250, 150, "obstacle_1"))
-        self.obstacles.add(Obstacle(1450, 100, "obstacle_1"))
-        self.obstacles.add(Obstacle(1650, 50, "obstacle_1"))
-        self.obstacles.add(Obstacle(1850, 0, "obstacle_1"))
+        self.obstacles.add(Obstacle(450, 200, "obstacle_2"))
+        self.obstacles.add(Obstacle(650, 150, "obstacle_1"))
+        self.obstacles.add(Obstacle(850, 100, "obstacle_1"))
+        self.obstacles.add(Obstacle(650, 50, "obstacle_2"))
+        self.obstacles.add(Obstacle(850, 0, "obstacle_1"))
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
         self.items.add(Item(420, 370, "jump_boost"))
         self.items.add(Item(620, 320, "shield"))
-        self.items.add(Item(820, 270, "invisibility"))
-        self.items.add(Item(1020, 220, "time_stop"))
-        self.items.add(Item(1220, 170, "double_jump"))
-        self.items.add(Item(1420, 120, "flight"))
-        self.items.add(Item(1620, 70, "super_speed"))
+        self.items.add(Item(320, 270, "invisibility"))
+        self.items.add(Item(520, 220, "time_stop"))
+        self.items.add(Item(720, 170, "double_jump"))
+        self.items.add(Item(520, 120, "flight"))
+        self.items.add(Item(720, 70, "super_speed"))
 
         # 终点
-        self.goal = Goal(1950, 500)
+        self.goal = Goal(750, 0)
 
     def setup_level_9(self):
-        self.time_limit = 120
+        self.time_limit = 50
 
         # 地面
-        self.platforms.add(Platform(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50, "platform_2"))
+        self.platforms.add(Platform(0, 550, 800, 50, "platform_2"))
 
         # 平台
-        self.platforms.add(Platform(150, 470, 150, 20, "platform_1"))
-        self.platforms.add(Platform(350, 420, 100, 20, "platform_1"))
-        self.platforms.add(Platform(550, 370, 100, 20, "platform_1"))
-        self.platforms.add(Platform(750, 320, 100, 20, "platform_1"))
-        self.platforms.add(Platform(950, 270, 100, 20, "platform_1"))
-        self.platforms.add(Platform(1150, 220, 100, 20, "platform_1"))
-        self.platforms.add(Platform(1350, 170, 100, 20, "platform_1"))
-        self.platforms.add(Platform(1550, 120, 100, 20, "platform_1"))
-        self.platforms.add(Platform(1750, 70, 100, 20, "platform_1"))
-        self.platforms.add(Platform(1950, 20, 100, 20, "platform_1"))
+        self.platforms.add(Platform(100, 450, 100, 20, "platform_1"))
+        self.platforms.add(Platform(300, 400, 100, 20, "platform_1"))
+        self.platforms.add(Platform(500, 350, 100, 20, "platform_1"))
+        self.platforms.add(Platform(700, 300, 100, 20, "platform_1"))
+        self.platforms.add(Platform(300, 250, 100, 20, "platform_1"))
+        self.platforms.add(Platform(500, 200, 100, 20, "platform_1"))
+        self.platforms.add(Platform(700, 150, 100, 20, "platform_1"))
+        self.platforms.add(Platform(500, 100, 100, 20, "platform_1"))
+        self.platforms.add(Platform(700, 50, 100, 20, "platform_1"))
+        self.platforms.add(Platform(500, 0, 100, 20, "platform_1"))
 
         # 墙壁
         self.platforms.add(Platform(200, 300, 20, 100, "platform_1"))
         self.platforms.add(Platform(400, 350, 20, 80, "platform_1"))
         self.platforms.add(Platform(600, 300, 20, 100, "platform_1"))
-        self.platforms.add(Platform(800, 250, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1000, 200, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1200, 150, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1400, 100, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1600, 50, 20, 100, "platform_1"))
-        self.platforms.add(Platform(1800, 0, 20, 100, "platform_1"))
-        self.platforms.add(Platform(2000, -50, 20, 100, "platform_1"))
+        self.platforms.add(Platform(400, 200, 20, 100, "platform_1"))
+        self.platforms.add(Platform(600, 150, 20, 100, "platform_1"))
+        self.platforms.add(Platform(800, 100, 20, 100, "platform_1"))
+        self.platforms.add(Platform(600, 50, 20, 100, "platform_1"))
+        self.platforms.add(Platform(800, 0, 20, 100, "platform_1"))
+        self.platforms.add(Platform(400, -50, 20, 100, "platform_1"))
 
         # 金币
-        self.coins.add(Coin(190, 430))
-        self.coins.add(Coin(390, 400))
-        self.coins.add(Coin(590, 350))
-        self.coins.add(Coin(790, 300))
-        self.coins.add(Coin(990, 250))
-        self.coins.add(Coin(1190, 200))
-        self.coins.add(Coin(1390, 150))
-        self.coins.add(Coin(1590, 100))
-        self.coins.add(Coin(1790, 50))
-        self.coins.add(Coin(1990, 0))
+        self.coins.add(Coin(140, 430))
+        self.coins.add(Coin(340, 380))
+        self.coins.add(Coin(540, 330))
+        self.coins.add(Coin(740, 280))
+        self.coins.add(Coin(340, 230))
+        self.coins.add(Coin(540, 180))
+        self.coins.add(Coin(740, 130))
+        self.coins.add(Coin(540, 80))
+        self.coins.add(Coin(740, 30))
+        self.coins.add(Coin(540, -20))
 
         # 障碍物
         self.obstacles.add(Obstacle(250, 300, "obstacle_1"))
         self.obstacles.add(Obstacle(450, 350, "obstacle_1"))
         self.obstacles.add(Obstacle(650, 300, "obstacle_1"))
-        self.obstacles.add(Obstacle(850, 250, "obstacle_1"))
-        self.obstacles.add(Obstacle(1050, 200, "obstacle_1"))
-        self.obstacles.add(Obstacle(1250, 150, "obstacle_1"))
-        self.obstacles.add(Obstacle(1450, 100, "obstacle_1"))
-        self.obstacles.add(Obstacle(1650, 50, "obstacle_1"))
-        self.obstacles.add(Obstacle(1850, 0, "obstacle_1"))
-        self.obstacles.add(Obstacle(2050, -50, "obstacle_1"))
+        self.obstacles.add(Obstacle(450, 200, "obstacle_1"))
+        self.obstacles.add(Obstacle(650, 150, "obstacle_1"))
+        self.obstacles.add(Obstacle(850, 100, "obstacle_2"))
+        self.obstacles.add(Obstacle(650, 50, "obstacle_1"))
+        self.obstacles.add(Obstacle(850, 0, "obstacle_2"))
+        self.obstacles.add(Obstacle(450, -50, "obstacle_1"))
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
         self.items.add(Item(420, 370, "jump_boost"))
         self.items.add(Item(620, 320, "shield"))
-        self.items.add(Item(820, 270, "invisibility"))
-        self.items.add(Item(1020, 220, "time_stop"))
-        self.items.add(Item(1220, 170, "double_jump"))
-        self.items.add(Item(1420, 120, "flight"))
-        self.items.add(Item(1620, 70, "super_speed"))
-        self.items.add(Item(1820, 20, "god_mode"))
+        self.items.add(Item(320, 270, "invisibility"))
+        self.items.add(Item(520, 220, "time_stop"))
+        self.items.add(Item(720, 170, "double_jump"))
+        self.items.add(Item(520, 120, "flight"))
+        self.items.add(Item(720, 70, "super_speed"))
+        self.items.add(Item(520, 20, "god_mode"))
 
         # 终点
-        self.goal = Goal(2150, 500)
+        self.goal = Goal(750, -50)

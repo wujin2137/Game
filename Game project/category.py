@@ -41,7 +41,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = y
         self.vel_x = 0
         self.vel_y = 0
-        self.jump_strength = -12
+        self.jump_strength = -15
         self.gravity = 0.68
         self.on_ground = False
 
@@ -378,9 +378,9 @@ class GameState:
     #计算关卡得分
     def calculate_score(self, level: int, coins_collected: int, time_taken: float) -> int:
         # 基础分数算法：金币数量乘以系数，再根据时间调整
-        base_score = coins_collected * 100
+        base_score = coins_collected * 300
         time_bonus = max(0, (300 - time_taken) / 300)  # 300秒是基准时间
-        return int(base_score * (1 + time_bonus))
+        return int(base_score * (2 + time_bonus))
 
     #更新关卡统计数据   level：关卡编号 coins_collected：收集的金币数量 time_taken通关时间
     def update_level_stats(self, level: int, coins_collected: int, time_taken: float):
