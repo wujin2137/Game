@@ -346,13 +346,14 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.running = False
                     self.current_screen = None
-        #皮肤选择界面，显示可用的皮肤和解锁条件，在这里面设置背景图
+    
+    #皮肤选择界面，显示可用的皮肤和解锁条件，在这里面设置背景图
     def skins_screen(self):
         """皮肤选择界面"""
         
         # 加载背景图（保持原比例，填充空白）
         try:
-            original_bg = pygame.image.load("resource\image/background/background1.webp").convert()
+            original_bg = pygame.image.load("resource/image/background/background1.webp").convert()
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
             if bg_ratio > screen_ratio:
@@ -368,6 +369,26 @@ class Game:
         except:
             background = None
 
+        # 皮肤文案解释
+        skin_descriptions = {
+            "default": "默认皮肤",
+            "皮肤1": "无额外属性加成",
+            "皮肤2": "无视路障",
+            "皮肤3": "皮肤3"
+            # 可以根据实际情况添加更多皮肤文案
+        }
+
+        skin_names = list(Player.SKIN_PATHS.keys())
+        current_index = 0
+
+        button_width, button_height = 120, 120  # 保持按钮尺寸
+        margin = 60  # 增加皮肤之间的间距
+        buttons_per_row = 2
+
+        # 左右切换按钮
+        left_button = pygame.Rect(30, SCREEN_HEIGHT // 2 - 30, 60, 60)
+        right_button = pygame.Rect(SCREEN_WIDTH - 90, SCREEN_HEIGHT // 2 - 30, 60, 60)
+
         while self.current_screen == "skins":
             self.screen.fill(BLACK)
             if background:
@@ -380,88 +401,122 @@ class Game:
             title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 100))
             self.screen.blit(title_text, title_rect)
 
-            # 绘制皮肤
-            skin_names = list(Player.SKIN_PATHS.keys())
-            button_width, button_height = 150, 150
-            margin = 30
-            buttons_per_row = 2
+            # 绘制左右切换按钮
+            pygame.draw.rect(self.screen, RED if left_button.collidepoint(pygame.mouse.get_pos()) else (200, 0, 0), left_button)
+            pygame.draw.rect(self.screen, WHITE, left_button, 2)
+            left_arrow = self.font.render("<", True, WHITE)
+            left_arrow_rect = left_arrow.get_rect(center=left_button.center)
+            self.screen.blit(left_arrow, left_arrow_rect)
+
+            pygame.draw.rect(self.screen, RED if right_button.collidepoint(pygame.mouse.get_pos()) else (200, 0, 0), right_button)
+            pygame.draw.rect(self.screen, WHITE, right_button, 2)
+            right_arrow = self.font.render(">", True, WHITE)
+            right_arrow_rect = right_arrow.get_rect(center=right_button.center)
+            self.screen.blit(right_arrow, right_arrow_rect)
+
+            # 绘制当前显示的两个皮肤
             start_x = (SCREEN_WIDTH - (buttons_per_row * button_width + (buttons_per_row - 1) * margin)) // 2
             start_y = 200
 
-            for i, skin_name in enumerate(skin_names):
-                row = i // buttons_per_row
-                col = i % buttons_per_row
-                x = start_x + col * (button_width + margin)
-                y = start_y + row * (button_height + margin)
+            for i in range(2):
+                if current_index + i < len(skin_names):
+                    skin_name = skin_names[current_index + i]
+                    col = i
+                    x = start_x + col * (button_width + margin)
+                    y = start_y
 
-                rect = pygame.Rect(x, y, button_width, button_height)
+                    rect = pygame.Rect(x, y, button_width, button_height)
 
-                # 检查皮肤是否已解锁
-                if skin_name in self.game_state.unlocked_skins:
-                    # 绘制皮肤图片
-                    try:
-                        skin_path = Player.SKIN_PATHS[skin_name]
-                        skin_img = pygame.image.load(skin_path).convert_alpha()
-                        skin_img = pygame.transform.scale(skin_img, (button_width - 30, button_height - 30))  # 稍小的尺寸
-                        self.screen.blit(skin_img, (x + 15, y + 15))  # 居中显示
-                    except:
-                        # 如果图片加载失败，显示皮肤名称
+                    # 检查皮肤是否已解锁
+                    if skin_name in self.game_state.unlocked_skins:
+                        # 绘制皮肤图片
+                        try:
+                            skin_path = Player.SKIN_PATHS[skin_name]
+                            skin_img = pygame.image.load(skin_path).convert_alpha()
+                            skin_img = pygame.transform.scale(skin_img, (button_width - 20, button_height - 20))
+                            self.screen.blit(skin_img, (x + 10, y + 10))
+                        except:
+                            name_text = self.font.render(skin_name, True, WHITE)
+                            name_rect = name_text.get_rect(center=rect.center)
+                            self.screen.blit(name_text, name_rect)
+
+                        # 鼠标悬停效果
+                        if rect.collidepoint(pygame.mouse.get_pos()):
+                            hover_surface = pygame.Surface((button_width, button_height), pygame.SRCALPHA)
+                            hover_surface.fill((255, 255, 255, 30))
+                            self.screen.blit(hover_surface, (x, y))
+
+                        # 选中效果
+                        if skin_name == self.game_state.selected_skin:
+                            border_surface = pygame.Surface((button_width + 10, button_height + 10), pygame.SRCALPHA)
+                            pygame.draw.rect(border_surface, (255, 255, 0, 150), (0, 0, button_width + 10, button_height + 10), 5, border_radius=10)
+                            self.screen.blit(border_surface, (x - 5, y - 5))
+
+                            check_mark = self.font.render("✓", True, YELLOW)
+                            check_rect = check_mark.get_rect(topright=(x + button_width - 5, y + 5))
+                            self.screen.blit(check_mark, check_rect)
+
+                        # 皮肤名称
                         name_text = self.font.render(skin_name, True, WHITE)
-                        name_rect = name_text.get_rect(center=rect.center)
+                        name_rect = name_text.get_rect(center=(rect.centerx, y + button_height + 15))  # 微调位置
                         self.screen.blit(name_text, name_rect)
 
-                    # 鼠标悬停效果
-                    if rect.collidepoint(pygame.mouse.get_pos()):
-                        # 半透明悬停遮罩
-                        hover_surface = pygame.Surface((button_width, button_height), pygame.SRCALPHA)
-                        hover_surface.fill((255, 255, 255, 30))  # 半透明白色
-                        self.screen.blit(hover_surface, (x, y))
+                        # 皮肤文案解释，分成两行显示，增加行间距
+                        description = skin_descriptions.get(skin_name, "")
+                        words = description.split()
+                        line1 = " ".join(words[:len(words)//2])
+                        line2 = " ".join(words[len(words)//2:])
 
-                    # 选中效果
-                    if skin_name == self.game_state.selected_skin:
-                        # 发光边框效果
-                        border_surface = pygame.Surface((button_width + 10, button_height + 10), pygame.SRCALPHA)
-                        pygame.draw.rect(border_surface, (255, 255, 0, 150), (0, 0, button_width + 10, button_height + 10), 5, border_radius=10)
-                        self.screen.blit(border_surface, (x - 5, y - 5))
-                        
-                        # 选中标记
-                        check_mark = self.font.render("✓", True, YELLOW)
-                        check_rect = check_mark.get_rect(topright=(x + button_width - 5, y + 5))
-                        self.screen.blit(check_mark, check_rect)
+                        description_text1 = self.font.render(line1, True, WHITE)
+                        description_rect1 = description_text1.get_rect(center=(rect.centerx, y + button_height + 45))  # 增加间距
+                        self.screen.blit(description_text1, description_rect1)
 
-                    # 皮肤名称
-                    name_text = self.font.render(skin_name, True, WHITE)
-                    name_rect = name_text.get_rect(center=(rect.centerx, y + button_height + 15))
-                    self.screen.blit(name_text, name_rect)
+                        description_text2 = self.font.render(line2, True, WHITE)
+                        description_rect2 = description_text2.get_rect(center=(rect.centerx, y + button_height + 70))  # 增加间距
+                        self.screen.blit(description_text2, description_rect2)
 
-                    # 检查点击
-                    if pygame.mouse.get_pressed()[0] and rect.collidepoint(pygame.mouse.get_pos()):
-                        pygame.time.delay(200)
-                        self.game_state.selected_skin = skin_name
-                        self.game_state.save_game_data()
-                else:
-                    # 未解锁的皮肤
-                    lock_surface = pygame.Surface((button_width, button_height), pygame.SRCALPHA)
-                    lock_surface.fill((0, 0, 0, 150))  # 半透明黑色遮罩
-                    self.screen.blit(lock_surface, (x, y))
-                    pygame.draw.rect(self.screen, (100, 100, 100), rect, 2)
-
-                    # 显示解锁条件
-                    if skin_name == "皮肤1":
-                        required_score = 10000
-                    elif skin_name == "皮肤2":
-                        required_score = 30000
-                    elif skin_name == "皮肤3":
-                        required_score = 50000
+                        # 检查点击
+                        if pygame.mouse.get_pressed()[0] and rect.collidepoint(pygame.mouse.get_pos()):
+                            pygame.time.delay(200)
+                            self.game_state.selected_skin = skin_name
+                            self.game_state.save_game_data()
                     else:
-                        required_score = 0
+                        # 未解锁的皮肤
+                        lock_surface = pygame.Surface((button_width, button_height), pygame.SRCALPHA)
+                        lock_surface.fill((0, 0, 0, 150))
+                        self.screen.blit(lock_surface, (x, y))
+                        pygame.draw.rect(self.screen, (100, 100, 100), rect, 2)
 
-                    lock_text = self.font.render(f"需要 {required_score} 积分", True, WHITE)
-                    lock_rect = lock_text.get_rect(center=rect.center)
-                    self.screen.blit(lock_text, lock_rect)
+                        # 显示解锁条件
+                        if skin_name == "皮肤1":
+                            required_score = 10000
+                        elif skin_name == "皮肤2":
+                            required_score = 30000
+                        elif skin_name == "皮肤3":
+                            required_score = 50000
+                        else:
+                            required_score = 0
+
+                        lock_text = self.font.render(f"需要 {required_score} 积分", True, WHITE)
+                        lock_rect = lock_text.get_rect(center=rect.center)
+                        self.screen.blit(lock_text, lock_rect)
+
+                        # 皮肤文案解释，分成两行显示，增加行间距
+                        description = skin_descriptions.get(skin_name, "")
+                        words = description.split()
+                        line1 = " ".join(words[:len(words)//2])
+                        line2 = " ".join(words[len(words)//2:])
+
+                        description_text1 = self.font.render(line1, True, WHITE)
+                        description_rect1 = description_text1.get_rect(center=(rect.centerx, y + button_height + 45))  # 增加间距
+                        self.screen.blit(description_text1, description_rect1)
+
+                        description_text2 = self.font.render(line2, True, WHITE)
+                        description_rect2 = description_text2.get_rect(center=(rect.centerx, y + button_height + 70))  # 增加间距
+                        self.screen.blit(description_text2, description_rect2)
 
             # 返回按钮
-            back_button = pygame.Rect((SCREEN_WIDTH - 150) // 2, 500, 150, 50)
+            back_button = pygame.Rect((SCREEN_WIDTH - 120) // 2, 520, 120, 40)
             color = RED if back_button.collidepoint(pygame.mouse.get_pos()) else (200, 0, 0)
             pygame.draw.rect(self.screen, color, back_button)
             pygame.draw.rect(self.screen, WHITE, back_button, 2)
@@ -476,7 +531,7 @@ class Game:
 
             # 显示当前积分
             score_text = self.font.render(f"当前积分: {self.game_state.total_score}", True, WHITE)
-            score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, 560))
+            score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, 580))
             self.screen.blit(score_text, score_rect)
 
             pygame.display.flip()
@@ -486,6 +541,15 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.running = False
                     self.current_screen = None
+
+                # 处理左右切换按钮点击事件
+                if pygame.mouse.get_pressed()[0]:
+                    if left_button.collidepoint(pygame.mouse.get_pos()) and current_index > 0:
+                        pygame.time.delay(200)
+                        current_index -= 2
+                    elif right_button.collidepoint(pygame.mouse.get_pos()) and current_index + 2 < len(skin_names):
+                        pygame.time.delay(200)
+                        current_index += 2
 
     #游戏统计界面，显示游戏进度和成就，在这里面设置背景图
     def stats_screen(self):
@@ -691,6 +755,8 @@ class Game:
 
             pygame.display.flip()
             self.clock.tick(60)
+    
+    #暂停菜单
     def pause_menu(self):
         """暂停菜单"""
         paused = True
