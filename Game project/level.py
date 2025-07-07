@@ -147,7 +147,7 @@ class Level:
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
-        self.items.add(Item(420, 370, "jump_boost"))
+        self.items.add(Item(420, 370, "kunge"))
 
         # 终点
         self.goal = Goal(750, 500)
@@ -183,8 +183,8 @@ class Level:
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
-        self.items.add(Item(420, 370, "jump_boost"))
-        self.items.add(Item(620, 320, "shield"))
+        self.items.add(Item(420, 370, "kunge"))
+        self.items.add(Item(620, 320, "kunge"))
 
         # 终点
         self.goal = Goal(750, 250)
@@ -223,9 +223,9 @@ class Level:
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
-        self.items.add(Item(420, 370, "jump_boost"))
-        self.items.add(Item(620, 320, "shield"))
-        self.items.add(Item(320, 270, "invisibility"))
+        self.items.add(Item(420, 370, "kunge"))
+        self.items.add(Item(620, 320, "kunge"))
+        self.items.add(Item(320, 270, "kunge"))
 
         # 终点
         self.goal = Goal(750, 200)
@@ -268,10 +268,10 @@ class Level:
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
-        self.items.add(Item(420, 370, "jump_boost"))
-        self.items.add(Item(620, 320, "shield"))
-        self.items.add(Item(320, 270, "invisibility"))
-        self.items.add(Item(520, 220, "time_stop"))
+        self.items.add(Item(420, 370, "kunge"))
+        self.items.add(Item(620, 320, "kunge"))
+        self.items.add(Item(320, 270, "invincible"))
+        self.items.add(Item(520, 220, "kunge"))
 
         # 终点
         self.goal = Goal(750, 150)
@@ -318,11 +318,11 @@ class Level:
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
-        self.items.add(Item(420, 370, "jump_boost"))
-        self.items.add(Item(620, 320, "shield"))
-        self.items.add(Item(320, 270, "invisibility"))
-        self.items.add(Item(520, 220, "time_stop"))
-        self.items.add(Item(720, 170, "double_jump"))
+        self.items.add(Item(420, 370, "kunge"))
+        self.items.add(Item(620, 320, "kunge"))
+        self.items.add(Item(320, 270, "invincible"))
+        self.items.add(Item(520, 220, "kunge"))
+        self.items.add(Item(720, 170, "kunge"))
 
         # 终点
         self.goal = Goal(750, 100)
@@ -373,12 +373,12 @@ class Level:
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
-        self.items.add(Item(420, 370, "jump_boost"))
-        self.items.add(Item(620, 320, "shield"))
-        self.items.add(Item(320, 270, "invisibility"))
-        self.items.add(Item(520, 220, "time_stop"))
-        self.items.add(Item(720, 170, "double_jump"))
-        self.items.add(Item(520, 120, "flight"))
+        self.items.add(Item(420, 370, "kunge"))
+        self.items.add(Item(620, 320, "kunge"))
+        self.items.add(Item(320, 270, "invincible"))
+        self.items.add(Item(520, 220, "kunge"))
+        self.items.add(Item(720, 170, "kunge"))
+        self.items.add(Item(520, 120, "invincible"))
 
         # 终点
         self.goal = Goal(750, 50)
@@ -433,13 +433,13 @@ class Level:
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
-        self.items.add(Item(420, 370, "jump_boost"))
-        self.items.add(Item(620, 320, "shield"))
-        self.items.add(Item(320, 270, "invisibility"))
-        self.items.add(Item(520, 220, "time_stop"))
-        self.items.add(Item(720, 170, "double_jump"))
-        self.items.add(Item(520, 120, "flight"))
-        self.items.add(Item(720, 70, "super_speed"))
+        self.items.add(Item(420, 370, "kunge"))
+        self.items.add(Item(620, 320, "kunge"))
+        self.items.add(Item(320, 270, "kunge"))
+        self.items.add(Item(520, 220, "kunge"))
+        self.items.add(Item(720, 170, "kunge"))
+        self.items.add(Item(520, 120, "kunge"))
+        self.items.add(Item(720, 70, "kunge"))
 
         # 终点
         self.goal = Goal(750, 0)
@@ -498,14 +498,14 @@ class Level:
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
-        self.items.add(Item(420, 370, "jump_boost"))
-        self.items.add(Item(620, 320, "shield"))
-        self.items.add(Item(320, 270, "invisibility"))
-        self.items.add(Item(520, 220, "time_stop"))
-        self.items.add(Item(720, 170, "double_jump"))
-        self.items.add(Item(520, 120, "flight"))
-        self.items.add(Item(720, 70, "super_speed"))
-        self.items.add(Item(520, 20, "god_mode"))
+        self.items.add(Item(420, 370, "kunge"))
+        self.items.add(Item(620, 320, "kunge"))
+        self.items.add(Item(320, 270, "kunge"))
+        self.items.add(Item(520, 220, "kunge"))
+        self.items.add(Item(720, 170, "kunge"))
+        self.items.add(Item(520, 120, "kunge"))
+        self.items.add(Item(720, 70, "kunge"))
+        self.items.add(Item(520, 20, "kunge"))
 
         # 终点
         self.goal = Goal(750, -50)

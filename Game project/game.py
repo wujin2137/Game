@@ -608,7 +608,6 @@ class Game:
                         pygame.time.delay(200)
                         current_index += 2
 
-
     #游戏统计界面，显示游戏进度和成就，在这里面设置背景图
     def stats_screen(self):
         """游戏统计界面"""
@@ -700,13 +699,13 @@ class Game:
         # 加载关卡
         level = Level(self.current_level)
         total_coins_in_level = len(level.coins)  # 关卡初始金币总数
-        
+
         # 加载关卡背景
         level_background = level.load_background()
 
         # 创建玩家（使用选中的皮肤）
         player = Player(level.player_start_x, level.player_start_y, self.game_state.selected_skin)
-        
+
         # 创建精灵组
         all_sprites = pygame.sprite.Group()
         all_sprites.add(player)
@@ -717,12 +716,12 @@ class Game:
             all_sprites.add(level.items)
         if level.goal:
             all_sprites.add(level.goal)
-        
+
         # 游戏计时器
         start_time = pygame.time.get_ticks()
         game_time = 0
         coins_collected = 0
-        
+
         # 游戏循环
         running = True
         while running:
@@ -731,10 +730,10 @@ class Game:
                 self.screen.blit(level_background, (0, 0))
             else:
                 self.screen.fill(BLACK)
-            
+
             # 计算游戏时间
             game_time = (pygame.time.get_ticks() - start_time) / 1000
-            
+
             # 事件处理
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -764,13 +763,14 @@ class Game:
 
             # 更新玩家状态（只传原参数，避免报错）
             player.update(level.platforms, level.coins)  # 这里去掉obstacles参数，匹配原方法定义
-            
+
             # 更新已收集金币数
             coins_collected = total_coins_in_level - len(level.coins)
 
             # 障碍物碰撞处理（核心逻辑）
             # 1. 获取所有碰撞的障碍物
             collided_obstacles = pygame.sprite.spritecollide(player, level.obstacles, False)
+
             for obstacle in collided_obstacles:
                 # 2. 判断条件：玩家用“皮肤2” 且 障碍物是“obstacle_2”
                 if self.game_state.selected_skin == "皮肤2" and obstacle.obstacle_type == "obstacle_2":
@@ -780,8 +780,8 @@ class Game:
                     if obstacle.rect.x > SCREEN_WIDTH:
                         level.obstacles.remove(obstacle)
                         all_sprites.remove(obstacle)
-                else:
-                    # 其他情况：碰撞后游戏结束
+                elif not player.invincible:
+                    # 其他情况（非无敌状态）：碰撞后游戏结束
                     running = False
                     self.current_screen = "game_over"
 
@@ -789,7 +789,7 @@ class Game:
             if hasattr(level, 'items'):
                 for item in pygame.sprite.spritecollide(player, level.items, True):
                     player.apply_item_effect(item)
-            
+
             # 到达终点
             if level.goal and player.rect.colliderect(level.goal.rect):
                 self.level_complete_coins = coins_collected
@@ -811,9 +811,14 @@ class Game:
             self.screen.blit(coin_text, (20, 50))
             self.screen.blit(level_text, (SCREEN_WIDTH - 120, 20))
 
+            # 显示无敌时间
+            if player.invincible:
+                invincible_text = self.font.render(f"无敌时间: {player.invincible_timer / 60:.1f}秒", True, WHITE)
+                self.screen.blit(invincible_text, (20, 80))
+
             pygame.display.flip()
             self.clock.tick(60)
-    
+
     #暂停菜单
     def pause_menu(self):
         """暂停菜单"""

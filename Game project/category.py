@@ -49,6 +49,8 @@ class Player(pygame.sprite.Sprite):
         self.facing_right = True
         self.move_frame = 0  # 移动帧索引
         self.move_animation_speed = 10  # 移动动画速度
+        self.invincible = False  # 无敌状态
+        self.invincible_timer = 0  # 无敌计时器
 
         # 尝试加载皮肤图片
         self.idle_image, self.move_images, self.width = self._load_skin(skin_name)
@@ -183,6 +185,12 @@ class Player(pygame.sprite.Sprite):
             if self.speed_up_timer == 0:
                 self.speed = 4  # 恢复默认速度
 
+        # 处理无敌计时器
+        if self.invincible_timer > 0:
+            self.invincible_timer -= 1
+            if self.invincible_timer == 0:
+                self.invincible = False  # 取消无敌状态
+
         # 更新动画
         self.update_animation()
 
@@ -206,6 +214,12 @@ class Player(pygame.sprite.Sprite):
             self.image = self.idle_image
             if not self.facing_right:
                 self.image = pygame.transform.flip(self.image, True, False)
+
+        # 无敌特效展示：闪烁
+        if self.invincible and self.invincible_timer % 10 < 5:
+            self.image.set_alpha(128)
+        else:
+            self.image.set_alpha(255)
 
     # 检测与平台的碰撞
     def check_collision(self, vel_x: int, vel_y: int, platforms: pygame.sprite.Group):
@@ -247,10 +261,13 @@ class Player(pygame.sprite.Sprite):
     # 应用道具
     def apply_item_effect(self, item):
         if item.item_type == "speed_up":
-            self.speed = 8  # 加速（翻倍）
+            self.speed = 6  # 加速
             self.speed_up_timer = 300  # 5 秒（60 帧/秒）
             item.kill()
-
+        elif item.item_type == "invincible":
+            self.invincible = True
+            self.invincible_timer = 300  # 5 秒（60 帧/秒）
+            item.kill()
 
 # 平台类，在此处设置平台图片
 class Platform(pygame.sprite.Sprite):
@@ -312,9 +329,8 @@ class Coin(pygame.sprite.Sprite):
 class Obstacle(pygame.sprite.Sprite):
     # 定义不同类型障碍物对应的图标路径
     OBSTACLE_TYPES = {
-        "obstacle_1": "resource/image/icons/obstacle_1.png",
-        "obstacle_2": "resource/image/icons/obstacle_2.png",
-        # 可以根据需要添加更多类型
+        "obstacle_1": "resource/image/obstacle/obstacle_1.png",
+        "obstacle_2": "resource/image/obstacle/obstacle_2.png",
     }
     
     # 定义障碍物的最大尺寸
@@ -370,8 +386,9 @@ class Obstacle(pygame.sprite.Sprite):
 class Item(pygame.sprite.Sprite):
     # 定义不同类型道具对应的图标路径
     ITEM_TYPES = {
-        "speed_up": "resource/image/icons/speed_up.png",
-        # 可以根据需要添加更多类型
+        "speed_up": "resource/image/item/speed_up.png",
+        "kunge" : "resource/image/item/kunge.png",
+        "invincible" : "resource/image/item/invincible.png"
     }
     
     # 定义道具的最大尺寸
