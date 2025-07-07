@@ -73,7 +73,15 @@ class Player(pygame.sprite.Sprite):
             idle_image = pygame.image.load(skin_data["idle"]).convert_alpha()
         except:
             try:
-                idle_image = pygame.image.load(self.SKIN_PATHS["default"]["idle"]).convert_alpha()
+                default_idle = pygame.image.load(self.SKIN_PATHS["default"]["idle"]).convert_alpha()
+                original_width, original_height = default_idle.get_size()
+                if original_height == 0:  # 防止除零错误
+                    ratio = 1
+                else:
+                    ratio = original_width / original_height
+                new_width = int(self.height * ratio)
+                idle_image = pygame.Surface((new_width, self.height))
+                idle_image.fill((255, 100, 100))  # 默认颜色
             except:
                 idle_image = pygame.Surface((30, self.height))
                 idle_image.fill((255, 100, 100))  # 默认颜色
@@ -84,10 +92,25 @@ class Player(pygame.sprite.Sprite):
             for path in skin_data["move"]:
                 try:
                     move_image = pygame.image.load(path).convert_alpha()
-                    move_images.append(move_image)
+                    original_width, original_height = move_image.get_size()
+                    if original_height == 0:  # 防止除零错误
+                        ratio = 1
+                    else:
+                        ratio = original_width / original_height
+                    new_width = int(self.height * ratio)
+                    scaled_move_image = pygame.transform.scale(move_image, (new_width, self.height))
+                    move_images.append(scaled_move_image)
                 except:
                     try:
-                        move_image = pygame.image.load(self.SKIN_PATHS["default"]["move"]).convert_alpha()
+                        default_move = pygame.image.load(self.SKIN_PATHS["default"]["move"]).convert_alpha()
+                        original_width, original_height = default_move.get_size()
+                        if original_height == 0:  # 防止除零错误
+                            ratio = 1
+                        else:
+                            ratio = original_width / original_height
+                        new_width = int(self.height * ratio)
+                        move_image = pygame.Surface((new_width, self.height))
+                        move_image.fill((255, 100, 100))  # 默认颜色
                         move_images.append(move_image)
                     except:
                         move_image = pygame.Surface((30, self.height))
@@ -96,10 +119,25 @@ class Player(pygame.sprite.Sprite):
         else:
             try:
                 move_image = pygame.image.load(skin_data["move"]).convert_alpha()
-                move_images.append(move_image)
+                original_width, original_height = move_image.get_size()
+                if original_height == 0:  # 防止除零错误
+                    ratio = 1
+                else:
+                    ratio = original_width / original_height
+                new_width = int(self.height * ratio)
+                scaled_move_image = pygame.transform.scale(move_image, (new_width, self.height))
+                move_images.append(scaled_move_image)
             except:
                 try:
-                    move_image = pygame.image.load(self.SKIN_PATHS["default"]["move"]).convert_alpha()
+                    default_move = pygame.image.load(self.SKIN_PATHS["default"]["move"]).convert_alpha()
+                    original_width, original_height = default_move.get_size()
+                    if original_height == 0:  # 防止除零错误
+                        ratio = 1
+                    else:
+                        ratio = original_width / original_height
+                    new_width = int(self.height * ratio)
+                    move_image = pygame.Surface((new_width, self.height))
+                    move_image.fill((255, 100, 100))  # 默认颜色
                     move_images.append(move_image)
                 except:
                     move_image = pygame.Surface((30, self.height))
@@ -116,14 +154,10 @@ class Player(pygame.sprite.Sprite):
         # 根据比例和预设高度计算新宽度
         new_width = int(self.height * ratio)
 
-        # 缩放图像
+        # 缩放静止图像
         idle_image = pygame.transform.scale(idle_image, (new_width, self.height))
-        scaled_move_images = []
-        for move_image in move_images:
-            scaled_move_image = pygame.transform.scale(move_image, (new_width, self.height))
-            scaled_move_images.append(scaled_move_image)
 
-        return idle_image, scaled_move_images, new_width
+        return idle_image, move_images, new_width
 
     # 更新玩家状态
     def update(self, platforms: pygame.sprite.Group, coins: pygame.sprite.Group):

@@ -608,6 +608,7 @@ class Game:
                         pygame.time.delay(200)
                         current_index += 2
 
+
     #游戏统计界面，显示游戏进度和成就，在这里面设置背景图
     def stats_screen(self):
         """游戏统计界面"""
