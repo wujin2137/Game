@@ -1,7 +1,19 @@
 import pygame
 import json
 import os
+import sys
 from typing import List, Dict, Tuple, Optional
+
+# 定义 resource_path 函数
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 # 游戏常量
 SCREEN_WIDTH = 800
@@ -18,23 +30,23 @@ class Player(pygame.sprite.Sprite):
     # 皮肤数据
     SKIN_PATHS = {
         "default": {
-            "idle": "resource/image/skins/default_idle.png",
-            "move": "resource/image/skins/default_move.png"
+            "idle": resource_path("resource/image/skins/default_idle.png"),
+            "move": resource_path("resource/image/skins/default_move.png")
         },
         "皮肤1": {
-            "idle": "resource/image/skins/skin_1_idle.png",
-            "move": "resource/image/skins/skin_1_move.png"
+            "idle": resource_path("resource/image/skins/skin_1_idle.png"),
+            "move": resource_path("resource/image/skins/skin_1_move.png")
         },
         "皮肤2": {
-            "idle": "resource/image/skins/skin_2_idle.png",
-            "move": "resource/image/skins/skin_2_move.png"
+            "idle": resource_path("resource/image/skins/skin_2_idle.png"),
+            "move": resource_path("resource/image/skins/skin_2_move.png")
         },
         "皮肤3": {
-            "idle": "resource/image/skins/skin_3_idle.png",
+            "idle": resource_path("resource/image/skins/skin_3_idle.png"),
             "move": [
-                "resource/image/skins/skin_3_move_1.png",
-                "resource/image/skins/skin_3_move_2.png",
-                "resource/image/skins/skin_3_move_3.png"
+                resource_path("resource/image/skins/skin_3_move_1.png"),
+                resource_path("resource/image/skins/skin_3_move_2.png"),
+                resource_path("resource/image/skins/skin_3_move_3.png")
             ]
         },
     }
@@ -279,7 +291,7 @@ class Player(pygame.sprite.Sprite):
             self.invincible_timer = 300  # 5 秒（60 帧/秒）
             item.kill()
         elif item.item_type == "kunge":
-            kunge_sound = pygame.mixer.Sound("resource/sound/ji.mp3")
+            kunge_sound = pygame.mixer.Sound(resource_path("resource/sound/ji.mp3"))
             kunge_sound.play()
             item.kill()
         elif item.item_type == "canteen":  # 食堂道具效果
@@ -292,8 +304,8 @@ class Player(pygame.sprite.Sprite):
 class Platform(pygame.sprite.Sprite):
     # 定义不同类型平台对应的图标路径
     PLATFORM_TYPES = {
-        "platform_1": "resource/image/platform/platform_1.png",
-        "platform_2": "resource/image/platform/platform_2.png",
+        "platform_1": resource_path("resource/image/platform/platform_1.png"),
+        "platform_2": resource_path("resource/image/platform/platform_2.png"),
         # 可以根据需要添加更多类型
     }
 
@@ -326,7 +338,7 @@ class Platform(pygame.sprite.Sprite):
 # 金币类
 class Coin(pygame.sprite.Sprite):
     # 定义金币图标的路径
-    COIN_ICON_PATH = "resource/image/icons/coin.png"
+    COIN_ICON_PATH = resource_path("resource/image/icons/coin.png")
 
     #初始化
     def __init__(self, x: int, y: int):
@@ -348,8 +360,8 @@ class Coin(pygame.sprite.Sprite):
 class Obstacle(pygame.sprite.Sprite):
     # 定义不同类型障碍物对应的图标路径
     OBSTACLE_TYPES = {
-        "obstacle_1": "resource/image/obstacle/obstacle_1.png",
-        "obstacle_2": "resource/image/obstacle/obstacle_2.png",
+        "obstacle_1": resource_path("resource/image/obstacle/obstacle_1.png"),
+        "obstacle_2": resource_path("resource/image/obstacle/obstacle_2.png"),
     }
     
     # 定义障碍物的最大尺寸
@@ -405,10 +417,10 @@ class Obstacle(pygame.sprite.Sprite):
 class Item(pygame.sprite.Sprite):
     # 定义不同类型道具对应的图标路径
     ITEM_TYPES = {
-        "speed_up": "resource/image/item/speed_up.png",
-        "kunge" : "resource/image/item/kunge.png",
-        "invincible" : "resource/image/item/invincible.png",
-        "canteen" : "resource/image/item/canteen.png"
+        "speed_up": resource_path("resource/image/item/speed_up.png"),
+        "kunge" : resource_path("resource/image/item/kunge.png"),
+        "invincible" : resource_path("resource/image/item/invincible.png"),
+        "canteen" : resource_path("resource/image/item/canteen.png")
     }
     
     # 定义道具的最大尺寸
@@ -467,7 +479,7 @@ class Goal(pygame.sprite.Sprite):
         super().__init__()
         try:
             # 加载自定义的终点图标
-            original_image = pygame.image.load("resource/image/icons/goal.png").convert_alpha()
+            original_image = pygame.image.load(resource_path("resource/image/icons/goal.png")).convert_alpha()
             self.image = pygame.transform.smoothscale(original_image, (40, 40)) #设置图片尺寸40*40
         except FileNotFoundError:
             # 如果图片不存在，绘制一个40*40的简单图形
@@ -494,7 +506,7 @@ class GameState:
     #从json文件加载游戏存档数据
     def load_game_data(self):
         try:
-            with open("saves/game_data.json", "r") as file:
+            with open(resource_path("saves/game_data.json"), "r") as file:
                 data = json.load(file)
                 self.current_level = data.get("current_level", 0)
                 self.total_coins = data.get("total_coins", 0)
@@ -516,7 +528,7 @@ class GameState:
             "selected_skin": self.selected_skin,
             "level_stats": self.level_stats
         }
-        with open("saves/game_data.json", "w") as file:
+        with open(resource_path("saves/game_data.json"), "w") as file:
             json.dump(data, file)
 
     #计算关卡得分

@@ -1,6 +1,19 @@
 import pygame
 from category import Platform, Coin, Goal, Obstacle, Item, SCREEN_WIDTH, SCREEN_HEIGHT
 
+# 假设这是 resource_path 函数，你可以根据实际情况修改
+def resource_path(relative_path):
+    """获取资源的绝对路径"""
+    import sys
+    import os
+    try:
+        # PyInstaller 创建临时文件夹, 将路径存储于 _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 class Level:
     # 初始化关卡类
     def __init__(self, level_num: int):
@@ -20,16 +33,16 @@ class Level:
     # 获取当前关卡的背景图路径，在这里设置背景图路径
     def get_background_path(self):
         background_files = [
-            "resource/image/background/background1.webp",    # 第0关
-            "resource/image/background/background2.webp",    # 第1关
-            "resource/image/background/background3.webp",    # 第2关
-            "resource/image/background/background4.webp",    # 第3关
-            "resource/image/background/background5.webp",    # 第4关
-            "resource/image/background/background6.webp",    # 第5关
-            "resource/image/background/background7.webp",    # 第6关
-            "resource/image/background/background8.webp",    # 第7关
-            "resource/image/background/background9.webp",    # 第8关
-            "resource/image/background/background10.webp"     # 第9关
+            resource_path("resource/image/background/background1.webp"),    # 第0关
+            resource_path("resource/image/background/background2.webp"),    # 第1关
+            resource_path("resource/image/background/background3.webp"),    # 第2关
+            resource_path("resource/image/background/background4.webp"),    # 第3关
+            resource_path("resource/image/background/background5.webp"),    # 第4关
+            resource_path("resource/image/background/background6.webp"),    # 第5关
+            resource_path("resource/image/background/background7.webp"),    # 第6关
+            resource_path("resource/image/background/background8.webp"),    # 第7关
+            resource_path("resource/image/background/background9.webp"),    # 第8关
+            resource_path("resource/image/background/background10.webp")     # 第9关
         ]
         return background_files[self.level_num]
 

@@ -1,7 +1,20 @@
 import pygame
 import os
+import sys
 from category import Player, GameState, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, BLACK, RED, GREEN, BLUE, YELLOW
 from level import Level
+
+# 定义 resource_path 函数
+def resource_path(relative_path):
+    """获取资源文件的绝对路径"""
+    try:
+        # 如果程序被打包，获取打包后的资源路径
+        base_path = sys._MEIPASS
+    except Exception:
+        # 如果程序未打包，获取当前文件的目录
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 class Game:
     #初始化游戏类，设置游戏窗口、字体、游戏状态、设置主菜单背景图
@@ -15,14 +28,14 @@ class Game:
         self.running = True
         self.current_screen = "menu"
         # 确保皮肤目录存在
-        if not os.path.exists("resource/image/skins"):
-            os.makedirs("resource/image/skins")
+        if not os.path.exists(resource_path("resource/image/skins")):
+            os.makedirs(resource_path("resource/image/skins"))
 
         # 尝试加载字体
         try:
             # 尝试加载自定义字体
-            self.font = pygame.font.Font("fonts/ARCADE_N.TTF", 24)
-            self.large_font = pygame.font.Font("fonts/ARCADE_N.TTF", 48)
+            self.font = pygame.font.Font(resource_path("fonts/ARCADE_N.TTF"), 24)
+            self.large_font = pygame.font.Font(resource_path("fonts/ARCADE_N.TTF"), 48)
         except FileNotFoundError:
             # 如果自定义字体不存在，尝试使用系统中可用的中文字体
             pygame.font.init()
@@ -48,7 +61,7 @@ class Game:
         #加载菜单背景，这里采用保持原比例，填充空白，知道怎么改图片即可
         try:
             # 加载原始背景图
-            original_bg = pygame.image.load("resource/image/background/menu.webp").convert()  #这边切换路径
+            original_bg = pygame.image.load(resource_path("resource/image/background/menu.webp")).convert()  #这边切换路径
             # 计算缩放比例（保持宽高比）
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT           
@@ -71,8 +84,8 @@ class Game:
             self.menu_background = None
 
         # 确保保存数据的文件夹存在
-        if not os.path.exists("saves"):
-            os.makedirs("saves")
+        if not os.path.exists(resource_path("saves")):
+            os.makedirs(resource_path("saves"))
 
     #游戏主循环
     def run(self):
@@ -195,7 +208,7 @@ class Game:
         # 加载背景图
         background = None
         try:
-            original_bg = pygame.image.load("resource/image/background/background4.webp").convert()  # 背景图
+            original_bg = pygame.image.load(resource_path("resource/image/background/background4.webp")).convert()  # 背景图
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
             new_width = SCREEN_WIDTH if bg_ratio <= screen_ratio else int(SCREEN_HEIGHT * bg_ratio)
@@ -209,14 +222,14 @@ class Game:
         
         star_img = None
         try:
-            star_img = pygame.image.load("resource/image/icons/star.png").convert_alpha()
+            star_img = pygame.image.load(resource_path("resource/image/icons/star.png")).convert_alpha()
             star_img = pygame.transform.scale(star_img, (20, 20))
         except:
             pass
         
         lock_img = None
         try:
-            lock_img = pygame.image.load("resource/image/icons/lock.png").convert_alpha()
+            lock_img = pygame.image.load(resource_path("resource/image/icons/lock.png")).convert_alpha()
             lock_img = pygame.transform.scale(lock_img, (50, 50))
         except:
             pass
@@ -346,7 +359,7 @@ class Game:
         
         # 加载背景图（保持原比例，填充空白）
         try:
-            original_bg = pygame.image.load("resource/image/background/background1.webp").convert()
+            original_bg = pygame.image.load(resource_path("resource/image/background/background1.webp")).convert()
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
             if bg_ratio > screen_ratio:
@@ -381,9 +394,9 @@ class Game:
                 # 尝试加载静止图像作为预览
                 skin_data = Player.SKIN_PATHS[skin_name]
                 if isinstance(skin_data["idle"], str):
-                    preview_image = pygame.image.load(skin_data["idle"]).convert_alpha()
+                    preview_image = pygame.image.load(resource_path(skin_data["idle"])).convert_alpha()
                 else:
-                    preview_image = pygame.image.load(skin_data["idle"][0]).convert_alpha()
+                    preview_image = pygame.image.load(resource_path(skin_data["idle"][0])).convert_alpha()
                 skin_previews[skin_name] = preview_image
             except:
                 # 如果加载失败，创建一个彩色矩形作为预览
@@ -417,7 +430,7 @@ class Game:
                 # 有多个移动帧，加载所有帧
                 for path in skin_data["move"]:
                     try:
-                        frame = pygame.image.load(path).convert_alpha()
+                        frame = pygame.image.load(resource_path(path)).convert_alpha()
                         frame = pygame.transform.scale(frame, (button_width - 20, button_height - 20))
                         frames.append(frame)
                     except:
@@ -427,9 +440,9 @@ class Game:
                 # 如果没有动画帧或加载失败，使用静止图像或默认图像
                 try:
                     if isinstance(skin_data["idle"], str):
-                        frame = pygame.image.load(skin_data["idle"]).convert_alpha()
+                        frame = pygame.image.load(resource_path(skin_data["idle"])).convert_alpha()
                     else:
-                        frame = pygame.image.load(skin_data["idle"][0]).convert_alpha()
+                        frame = pygame.image.load(resource_path(skin_data["idle"][0])).convert_alpha()
                     frame = pygame.transform.scale(frame, (button_width - 20, button_height - 20))
                     frames.append(frame)
                 except:
@@ -614,7 +627,7 @@ class Game:
         
         # 加载背景图（保持原比例，填充空白）
         try:
-            original_bg = pygame.image.load("resource\image/background/background1.webp").convert()
+            original_bg = pygame.image.load(resource_path("resource/image/background/background1.webp")).convert()
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
             if bg_ratio > screen_ratio:
@@ -837,7 +850,7 @@ class Game:
 
         # 加载背景图（保持原比例，填充空白）
         try:
-            original_bg = pygame.image.load("resource/image/background/background9.webp").convert()
+            original_bg = pygame.image.load(resource_path("resource/image/background/background9.webp")).convert()
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
             if bg_ratio > screen_ratio:
@@ -921,7 +934,7 @@ class Game:
         """游戏结束界面"""
         # 加载背景图（保持原比例，填充空白）
         try:
-            original_bg = pygame.image.load("resource/image/background/background5.webp").convert()
+            original_bg = pygame.image.load(resource_path("resource/image/background/background5.webp")).convert()
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
             if bg_ratio > screen_ratio:
@@ -997,7 +1010,7 @@ class Game:
         """关卡完成界面"""
         # 加载背景图（保持原比例，填充空白）
         try:
-            original_bg = pygame.image.load("resource/image/background/background6.webp").convert()
+            original_bg = pygame.image.load(resource_path("resource/image/background/background6.webp")).convert()
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
             if bg_ratio > screen_ratio:
