@@ -2,7 +2,7 @@ import pygame
 from category import Platform, Coin, Goal, Obstacle, Item, SCREEN_WIDTH, SCREEN_HEIGHT
 
 class Level:
-    #初始化关卡类
+    # 初始化关卡类
     def __init__(self, level_num: int):
         self.level_num = level_num
         self.platforms = pygame.sprite.Group()
@@ -10,11 +10,11 @@ class Level:
         self.goal = None
         self.items = pygame.sprite.Group()
         self.obstacles = pygame.sprite.Group()
-        self.items = pygame.sprite.Group()
         self.player_start_x = 50
         self.player_start_y = 500
         self.time_limit = 120  # 默认时间限制（秒）
         self.background_path = self.get_background_path()  # 背景图路径
+        self.level_description = ""  # 新增属性，用于存储关卡描述
         self.setup_level()
 
     # 获取当前关卡的背景图路径，在这里设置背景图路径
@@ -33,7 +33,7 @@ class Level:
         ]
         return background_files[self.level_num]
 
-    # 加载背景图并返回缩放后的Surface（保持原比例，填充空白）
+    # 加载背景图（保持原比例）
     def load_background(self):
         try:
             # 使用 self.background_path 加载对应关卡的背景图
@@ -53,7 +53,7 @@ class Level:
         except:
             return None
 
-    #根据关卡号设置不同的关卡布局
+    # 根据关卡号设置不同的关卡布局
     def setup_level(self):
         # 根据关卡号设置不同的关卡布局
         if self.level_num == 0:
@@ -77,18 +77,19 @@ class Level:
         elif self.level_num == 9:
             self.setup_level_9()
 
-    #设置教程关卡(第0关）布局
+    # 教程关卡(第0关）布局
     def setup_tutorial_level(self):
         # 教程关卡
         self.time_limit = 60
+        self.level_description = "求学之路艰难，勇敢的厦大学子请翻越崇山峻岭前往厦大的大门吧，沿途别忘了收集学费"
 
         # 地面
-        self.platforms.add(Platform(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50 ,platform_type="platform_2"))
+        self.platforms.add(Platform(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50, platform_type="platform_2"))
 
         # 平台
-        self.platforms.add(Platform(100, 450, 100, 20 ,platform_type="platform_1"))
-        self.platforms.add(Platform(300, 400, 100, 20 ,platform_type="platform_1"))
-        self.platforms.add(Platform(500, 350, 100, 20 ,platform_type="platform_1"))
+        self.platforms.add(Platform(100, 450, 100, 20, platform_type="platform_1"))
+        self.platforms.add(Platform(300, 400, 100, 20, platform_type="platform_1"))
+        self.platforms.add(Platform(500, 350, 100, 20, platform_type="platform_1"))
 
         # 金币
         self.coins.add(Coin(140, 430))
@@ -98,16 +99,17 @@ class Level:
         # 终点
         self.goal = Goal(700, 300)
 
-    #设置第一关布局
+    # 第一关布局
     def setup_level_1(self):
+        self.level_description = "难度稍有提升，注意躲避障碍物，使用道具可以加速通过。"
         # 地面
-        self.platforms.add(Platform(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50 ,platform_type="platform_2"))
+        self.platforms.add(Platform(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50, platform_type="platform_2"))
 
         # 平台
-        self.platforms.add(Platform(150, 470, 150, 20 ,platform_type="platform_1"))
+        self.platforms.add(Platform(150, 470, 150, 20, platform_type="platform_1"))
 
         # 墙壁
-        self.platforms.add(Platform(200, 300, 20, 100 ,platform_type="platform_1"))
+        self.platforms.add(Platform(200, 300, 20, 100, platform_type="platform_1"))
 
         # 金币
         self.coins.add(Coin(190, 430))
@@ -121,8 +123,10 @@ class Level:
         # 终点
         self.goal = Goal(350, 500)
 
+    # 第二关布局
     def setup_level_2(self):
         self.time_limit = 120
+        self.level_description = "鸡哥是不会伤害你的"
 
         # 地面
         self.platforms.add(Platform(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50, "platform_2"))
@@ -147,14 +151,15 @@ class Level:
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
-        self.items.add(Item(420, 370, "kunge"))
+        self.items.add(Item(360, 370, "kunge"))
 
         # 终点
         self.goal = Goal(750, 500)
 
-    # 其他关卡设置方法（level_3 到 level_9）保持与之前相同...
+    # 第三关布局
     def setup_level_3(self):
-        self.time_limit = 120
+        self.time_limit = 20
+        self.level_description = "时间限制缩短，注意控制好时间。"
 
         # 地面
         self.platforms.add(Platform(0, 550, 800, 50, "platform_2"))
@@ -189,8 +194,10 @@ class Level:
         # 终点
         self.goal = Goal(750, 250)
 
+    # 第四关布局
     def setup_level_4(self):
-        self.time_limit = 100
+        self.time_limit = 30
+        self.level_description = "出现了路障，要是有辆大货车就好了"
 
         # 地面
         self.platforms.add(Platform(0, 550, 800, 50, "platform_2"))
@@ -217,7 +224,7 @@ class Level:
 
         # 障碍物
         self.obstacles.add(Obstacle(250, 300, "obstacle_1"))
-        self.obstacles.add(Obstacle(450, 350, "obstacle_2"))
+        self.obstacles.add(Obstacle(300, 510, "obstacle_2"))
         self.obstacles.add(Obstacle(650, 300, "obstacle_1"))
         self.obstacles.add(Obstacle(450, 200, "obstacle_1"))
 
@@ -230,8 +237,10 @@ class Level:
         # 终点
         self.goal = Goal(750, 200)
 
+    # 第五关布局
     def setup_level_5(self):
         self.time_limit = 90
+        self.level_description = "无敌道具可以收集到险处的金币"
 
         # 地面
         self.platforms.add(Platform(0, 550, 800, 50, "platform_2"))
@@ -276,8 +285,10 @@ class Level:
         # 终点
         self.goal = Goal(750, 150)
 
+    # 第六关布局
     def setup_level_6(self):
         self.time_limit = 80
+        self.level_description = ""
 
         # 地面
         self.platforms.add(Platform(0, 550, 800, 50, "platform_2"))
@@ -327,8 +338,10 @@ class Level:
         # 终点
         self.goal = Goal(750, 100)
 
+    # 第七关布局
     def setup_level_7(self):
         self.time_limit = 70
+        self.level_description = ""
 
         # 地面
         self.platforms.add(Platform(0, 550, 800, 50, "platform_2"))
@@ -383,8 +396,10 @@ class Level:
         # 终点
         self.goal = Goal(750, 50)
 
+    # 第八关布局
     def setup_level_8(self):
         self.time_limit = 60
+        self.level_description = ""
 
         # 地面
         self.platforms.add(Platform(0, 550, 800, 50, "platform_2"))
@@ -444,8 +459,10 @@ class Level:
         # 终点
         self.goal = Goal(750, 0)
 
+    # 第九关布局
     def setup_level_9(self):
         self.time_limit = 50
+        self.level_description = ""
 
         # 地面
         self.platforms.add(Platform(0, 550, 800, 50, "platform_2"))
