@@ -15,27 +15,45 @@ YELLOW = (255, 255, 0)
 
 # 玩家类，在此处设置皮肤路径
 class Player(pygame.sprite.Sprite):
-    #皮肤数据
+    # 皮肤数据
     SKIN_PATHS = {
-        "default": "resource/image/skins/default.png",
-        "皮肤1": "resource/image/skins/skin_1.png",
-        "皮肤2": "resource/image/skins/skin_2.png",
-        "皮肤3": "resource/image/skins/skin_3.png",
-        # 可以继续添加更多皮肤
+        "default": {
+            "idle": "resource/image/skins/default_idle.png",
+            "move": "resource/image/skins/default_move.png"
+        },
+        "皮肤1": {
+            "idle": "resource/image/skins/skin_1_idle.png",
+            "move": "resource/image/skins/skin_1_move.png"
+        },
+        "皮肤2": {
+            "idle": "resource/image/skins/skin_2_idle.png",
+            "move": "resource/image/skins/skin_2_move.png"
+        },
+        "皮肤3": {
+            "idle": "resource/image/skins/skin_3_idle.png",
+            "move": [
+                "resource/image/skins/skin_3_move_1.png",
+                "resource/image/skins/skin_3_move_2.png",
+                "resource/image/skins/skin_3_move_3.png"
+            ]
+        },
     }
 
-    #初始化玩家角色
+    # 初始化玩家角色
     def __init__(self, x: int, y: int, skin_name: str = "default"):
         super().__init__()
         self.height = 50  # 预设高度
-        self.speed = 5  # 默认速度
+        self.speed = 4  # 默认速度
         self.speed_up_timer = 0  # 加速计时器
         self.skin_name = skin_name
         self.facing_right = True
-        
+        self.move_frame = 0  # 移动帧索引
+        self.move_animation_speed = 10  # 移动动画速度
+
         # 尝试加载皮肤图片
-        self.image, self.width = self._load_skin(skin_name)
-        
+        self.idle_image, self.move_images, self.width = self._load_skin(skin_name)
+        self.image = self.idle_image
+
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -45,39 +63,69 @@ class Player(pygame.sprite.Sprite):
         self.gravity = 0.68
         self.on_ground = False
 
-    #加载皮肤
+    # 加载皮肤
     def _load_skin(self, skin_name):
         """加载皮肤并按原始比例调整尺寸"""
+        skin_data = self.SKIN_PATHS.get(skin_name, self.SKIN_PATHS["default"])
+
+        # 加载静止图片
         try:
-            # 尝试加载指定皮肤
-            skin_path = self.SKIN_PATHS.get(skin_name, self.SKIN_PATHS["default"])
-            original_image = pygame.image.load(skin_path).convert_alpha()
+            idle_image = pygame.image.load(skin_data["idle"]).convert_alpha()
         except:
             try:
-                # 指定皮肤加载失败，尝试加载默认皮肤
-                original_image = pygame.image.load(self.SKIN_PATHS["default"]).convert_alpha()
+                idle_image = pygame.image.load(self.SKIN_PATHS["default"]["idle"]).convert_alpha()
             except:
-                # 默认皮肤也加载失败，创建纯色矩形
-                original_image = pygame.Surface((30, self.height))
-                original_image.fill((255, 100, 100))  # 默认颜色
-                return original_image, 30
-        
+                idle_image = pygame.Surface((30, self.height))
+                idle_image.fill((255, 100, 100))  # 默认颜色
+
+        # 加载移动图片
+        move_images = []
+        if isinstance(skin_data["move"], list):
+            for path in skin_data["move"]:
+                try:
+                    move_image = pygame.image.load(path).convert_alpha()
+                    move_images.append(move_image)
+                except:
+                    try:
+                        move_image = pygame.image.load(self.SKIN_PATHS["default"]["move"]).convert_alpha()
+                        move_images.append(move_image)
+                    except:
+                        move_image = pygame.Surface((30, self.height))
+                        move_image.fill((255, 100, 100))  # 默认颜色
+                        move_images.append(move_image)
+        else:
+            try:
+                move_image = pygame.image.load(skin_data["move"]).convert_alpha()
+                move_images.append(move_image)
+            except:
+                try:
+                    move_image = pygame.image.load(self.SKIN_PATHS["default"]["move"]).convert_alpha()
+                    move_images.append(move_image)
+                except:
+                    move_image = pygame.Surface((30, self.height))
+                    move_image.fill((255, 100, 100))  # 默认颜色
+                    move_images.append(move_image)
+
         # 获取原始图像宽高比
-        original_width, original_height = original_image.get_size()
+        original_width, original_height = idle_image.get_size()
         if original_height == 0:  # 防止除零错误
             ratio = 1
         else:
             ratio = original_width / original_height
-            
+
         # 根据比例和预设高度计算新宽度
         new_width = int(self.height * ratio)
-        
-        # 缩放图像
-        scaled_image = pygame.transform.scale(original_image, (new_width, self.height))
-        
-        return scaled_image, new_width
 
-    #更新玩家状态
+        # 缩放图像
+        idle_image = pygame.transform.scale(idle_image, (new_width, self.height))
+        scaled_move_images = []
+        for move_image in move_images:
+            scaled_move_image = pygame.transform.scale(move_image, (new_width, self.height))
+            scaled_move_images.append(scaled_move_image)
+
+        return idle_image, scaled_move_images, new_width
+
+    # 更新玩家状态
     def update(self, platforms: pygame.sprite.Group, coins: pygame.sprite.Group):
         # 应用重力
         self.vel_y += self.gravity
@@ -99,9 +147,33 @@ class Player(pygame.sprite.Sprite):
         if self.speed_up_timer > 0:
             self.speed_up_timer -= 1
             if self.speed_up_timer == 0:
-                self.speed = 5  # 恢复默认速度
+                self.speed = 4  # 恢复默认速度
 
-    #检测与平台的碰撞
+        # 更新动画
+        self.update_animation()
+
+    # 更新动画
+    def update_animation(self):
+        if self.vel_x != 0:
+            # 移动状态
+            if len(self.move_images) > 1:
+                # 有多个移动帧，播放动画
+                self.move_frame = (self.move_frame + 1) % (len(self.move_images) * self.move_animation_speed)
+                frame_index = self.move_frame // self.move_animation_speed
+                self.image = self.move_images[frame_index]
+            else:
+                # 只有一个移动帧，显示移动图片
+                self.image = self.move_images[0]
+
+            if not self.facing_right:
+                self.image = pygame.transform.flip(self.image, True, False)
+        else:
+            # 静止状态
+            self.image = self.idle_image
+            if not self.facing_right:
+                self.image = pygame.transform.flip(self.image, True, False)
+
+    # 检测与平台的碰撞
     def check_collision(self, vel_x: int, vel_y: int, platforms: pygame.sprite.Group):
         for platform in platforms:
             if self.rect.colliderect(platform.rect):
@@ -119,31 +191,32 @@ class Player(pygame.sprite.Sprite):
                     self.rect.top = platform.rect.bottom
                     self.vel_y = 0
 
-    #执行跳跃
+    # 执行跳跃
     def jump(self):
         if self.on_ground:
             self.vel_y = self.jump_strength
 
-    #向左移动
+    # 向左移动
     def move_left(self):
         self.vel_x = -self.speed
         self.facing_right = False
 
-    #向右移动
+    # 向右移动
     def move_right(self):
         self.vel_x = self.speed
         self.facing_right = True
 
-    #停止水平移动
+    # 停止水平移动
     def stop(self):
         self.vel_x = 0
 
-    #应用道具
+    # 应用道具
     def apply_item_effect(self, item):
         if item.item_type == "speed_up":
-            self.speed = 10  # 加速（翻倍）
+            self.speed = 8  # 加速（翻倍）
             self.speed_up_timer = 300  # 5 秒（60 帧/秒）
-            item.kill()  # 移除道具
+            item.kill()
+
 
 # 平台类，在此处设置平台图片
 class Platform(pygame.sprite.Sprite):

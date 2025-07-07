@@ -184,7 +184,7 @@ class Game:
 
     #关卡选择界面，显示可选的关卡和锁定状态，在这里面设置背景图
     def level_select_screen(self):
-        """关卡选择界面 - 10关，每行5个，背景切换"""
+        """关卡选择界面 - 10关，每行5个，固定总背景图"""
         level_buttons = []
         for i in range(10):  # 10个关卡
             level_buttons.append({
@@ -192,25 +192,21 @@ class Game:
                 "scale": 1.0
             })
         
-        # 预加载10个关卡背景图（background1.webp 到 background10.webp）
-        background_images = []
-        for i in range(1, 11):
-            try:
-                original_bg = pygame.image.load(f"resource/image/background/background{i}.webp").convert()
-                bg_ratio = original_bg.get_width() / original_bg.get_height()
-                screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
-                new_width = SCREEN_WIDTH if bg_ratio <= screen_ratio else int(SCREEN_HEIGHT * bg_ratio)
-                new_height = SCREEN_HEIGHT if bg_ratio >= screen_ratio else int(SCREEN_WIDTH / bg_ratio)
-                scaled_bg = pygame.transform.scale(original_bg, (new_width, new_height))
-                x_offset = (new_width - SCREEN_WIDTH) // 2
-                y_offset = (new_height - SCREEN_HEIGHT) // 2
-                background = scaled_bg.subsurface((x_offset, y_offset, SCREEN_WIDTH, SCREEN_HEIGHT))
-                background_images.append(background)
-            except Exception as e:
-                print(f"加载背景图 {i} 失败: {e}")
-                background_images.append(None)
+        # 加载背景图
+        background = None
+        try:
+            original_bg = pygame.image.load("resource/image/background/background4.webp").convert()  # 背景图
+            bg_ratio = original_bg.get_width() / original_bg.get_height()
+            screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
+            new_width = SCREEN_WIDTH if bg_ratio <= screen_ratio else int(SCREEN_HEIGHT * bg_ratio)
+            new_height = SCREEN_HEIGHT if bg_ratio >= screen_ratio else int(SCREEN_WIDTH / bg_ratio)
+            scaled_bg = pygame.transform.scale(original_bg, (new_width, new_height))
+            x_offset = (new_width - SCREEN_WIDTH) // 2
+            y_offset = (new_height - SCREEN_HEIGHT) // 2
+            background = scaled_bg.subsurface((x_offset, y_offset, SCREEN_WIDTH, SCREEN_HEIGHT))
+        except Exception as e:
+            print(f"加载背景图失败: {e}")
         
-        current_bg_index = 0  # 当前显示的背景图索引（悬停关卡对应）
         star_img = None
         try:
             star_img = pygame.image.load("resource/image/icons/star.png").convert_alpha()
@@ -227,17 +223,16 @@ class Game:
 
         while self.current_screen == "level_select":
             self.screen.fill(BLACK)
-            # 显示当前悬停关卡的背景图
-            current_bg = background_images[current_bg_index] if current_bg_index < len(background_images) else None
-            if current_bg:
-                self.screen.blit(current_bg, (0, 0))
+            # 显示固定的总背景图
+            if background:
+                self.screen.blit(background, (0, 0))
             else:
-                # 渐变背景 fallback
+                # 渐变背景 fallback（保持原逻辑）
                 for y in range(SCREEN_HEIGHT):
                     color = (0, 0, max(50, int(150 * y / SCREEN_HEIGHT)))
                     pygame.draw.line(self.screen, color, (0, y), (SCREEN_WIDTH, y))
             
-            # 绘制标题
+            # 绘制标题（保持原逻辑）
             title_text = self.large_font.render("选择关卡", True, WHITE)
             title_shadow = self.large_font.render("选择关卡", True, (100, 100, 100))
             title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 80))
@@ -260,15 +255,13 @@ class Game:
                 
                 rect = pygame.Rect(x, y, button_size, button_size)
                 
-                # 更新悬停状态和背景索引
+                # 更新悬停状态（移除背景索引切换逻辑）
                 if level <= self.game_state.current_level:
                     level_buttons[level]["hover"] = rect.collidepoint(mouse_pos)
-                    if level_buttons[level]["hover"]:
-                        current_bg_index = level  # 悬停时切换背景
                 else:
                     level_buttons[level]["hover"] = False
                 
-                # 平滑缩放动画
+                # 平滑缩放动画（保持原逻辑）
                 target_scale = 1.1 if level_buttons[level]["hover"] else 1.0
                 level_buttons[level]["scale"] = max(1.0, min(1.1, level_buttons[level]["scale"] + (target_scale - level_buttons[level]["scale"]) * 0.1))
                 scale = level_buttons[level]["scale"]
@@ -276,7 +269,7 @@ class Game:
                 scale_offset = (scaled_size - button_size) // 2
                 
                 if level <= self.game_state.current_level:
-                    # 已解锁关卡绘制
+                    # 已解锁关卡绘制（保持原逻辑）
                     button_color = (50, 150, 255) if level_buttons[level]["hover"] else (30, 100, 200)
                     border_color = (200, 200, 0) if level == self.game_state.current_level else (200, 200, 200)
                     
@@ -305,7 +298,7 @@ class Game:
                         self.current_level = level
                         self.current_screen = "game"
                 else:
-                    # 未解锁关卡绘制
+                    # 未解锁关卡绘制（保持原逻辑）
                     button_surf = pygame.Surface((button_size, button_size), pygame.SRCALPHA)
                     pygame.draw.rect(button_surf, (50, 50, 50, 200), (0, 0, button_size, button_size), border_radius=15)
                     pygame.draw.rect(button_surf, (100, 100, 100), (0, 0, button_size, button_size), width=2, border_radius=15)
@@ -325,7 +318,7 @@ class Game:
                     unlock_rect = unlock_text.get_rect(center=(x + button_size // 2, y + button_size + 15))
                     self.screen.blit(unlock_text, unlock_rect)
             
-            # 返回按钮
+            # 返回按钮（保持原逻辑）
             back_button = pygame.Rect(SCREEN_WIDTH // 2 - 75, SCREEN_HEIGHT - 80, 150, 50)
             back_color = (200, 50, 50) if back_button.collidepoint(mouse_pos) else (150, 40, 40)
             for i in range(back_button.height):
@@ -345,8 +338,8 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
-                    self.current_screen = None
-    
+                    self.current_screen = None   
+
     #皮肤选择界面，显示可用的皮肤和解锁条件，在这里面设置背景图
     def skins_screen(self):
         """皮肤选择界面"""
@@ -380,6 +373,25 @@ class Game:
 
         skin_names = list(Player.SKIN_PATHS.keys())
         current_index = 0
+        
+        # 为每个皮肤创建预览图像
+        skin_previews = {}
+        for skin_name in skin_names:
+            try:
+                # 尝试加载静止图像作为预览
+                skin_data = Player.SKIN_PATHS[skin_name]
+                if isinstance(skin_data["idle"], str):
+                    preview_image = pygame.image.load(skin_data["idle"]).convert_alpha()
+                else:
+                    preview_image = pygame.image.load(skin_data["idle"][0]).convert_alpha()
+                skin_previews[skin_name] = preview_image
+            except:
+                # 如果加载失败，创建一个彩色矩形作为预览
+                preview_image = pygame.Surface((120, 120))
+                colors = [(255, 100, 100), (100, 255, 100), (100, 100, 255), (255, 255, 100)]
+                color_index = skin_names.index(skin_name) % len(colors)
+                preview_image.fill(colors[color_index])
+                skin_previews[skin_name] = preview_image
 
         button_width, button_height = 120, 120  # 保持按钮尺寸
         margin = 60  # 增加皮肤之间的间距
@@ -388,6 +400,45 @@ class Game:
         # 左右切换按钮
         left_button = pygame.Rect(30, SCREEN_HEIGHT // 2 - 30, 60, 60)
         right_button = pygame.Rect(SCREEN_WIDTH - 90, SCREEN_HEIGHT // 2 - 30, 60, 60)
+        
+        # 动画相关变量
+        animation_frames = {}  # 存储每个皮肤的动画帧
+        animation_index = 0    # 当前动画帧索引
+        animation_speed = 10   # 动画速度（数值越小，速度越快）
+        frame_counter = 0      # 帧计数器
+        
+        # 初始化动画帧
+        for skin_name in skin_names:
+            skin_data = Player.SKIN_PATHS[skin_name]
+            frames = []
+            
+            # 检查移动资源是单张图片还是列表
+            if isinstance(skin_data["move"], list):
+                # 有多个移动帧，加载所有帧
+                for path in skin_data["move"]:
+                    try:
+                        frame = pygame.image.load(path).convert_alpha()
+                        frame = pygame.transform.scale(frame, (button_width - 20, button_height - 20))
+                        frames.append(frame)
+                    except:
+                        pass  # 如果加载失败，跳过该帧
+            
+            if not frames:
+                # 如果没有动画帧或加载失败，使用静止图像或默认图像
+                try:
+                    if isinstance(skin_data["idle"], str):
+                        frame = pygame.image.load(skin_data["idle"]).convert_alpha()
+                    else:
+                        frame = pygame.image.load(skin_data["idle"][0]).convert_alpha()
+                    frame = pygame.transform.scale(frame, (button_width - 20, button_height - 20))
+                    frames.append(frame)
+                except:
+                    # 创建默认帧
+                    frame = pygame.Surface((button_width - 20, button_height - 20))
+                    frame.fill((255, 100, 100))
+                    frames.append(frame)
+            
+            animation_frames[skin_name] = frames
 
         while self.current_screen == "skins":
             self.screen.fill(BLACK)
@@ -414,6 +465,12 @@ class Game:
             right_arrow_rect = right_arrow.get_rect(center=right_button.center)
             self.screen.blit(right_arrow, right_arrow_rect)
 
+            # 更新动画帧
+            frame_counter += 1
+            if frame_counter >= animation_speed:
+                frame_counter = 0
+                animation_index = (animation_index + 1) % max(len(frames) for frames in animation_frames.values())
+
             # 绘制当前显示的两个皮肤
             start_x = (SCREEN_WIDTH - (buttons_per_row * button_width + (buttons_per_row - 1) * margin)) // 2
             start_y = 200
@@ -431,10 +488,10 @@ class Game:
                     if skin_name in self.game_state.unlocked_skins:
                         # 绘制皮肤图片
                         try:
-                            skin_path = Player.SKIN_PATHS[skin_name]
-                            skin_img = pygame.image.load(skin_path).convert_alpha()
-                            skin_img = pygame.transform.scale(skin_img, (button_width - 20, button_height - 20))
-                            self.screen.blit(skin_img, (x + 10, y + 10))
+                            # 使用当前动画帧
+                            frames = animation_frames[skin_name]
+                            current_frame = frames[animation_index % len(frames)]
+                            self.screen.blit(current_frame, (x + 10, y + 10))
                         except:
                             name_text = self.font.render(skin_name, True, WHITE)
                             name_rect = name_text.get_rect(center=rect.center)
