@@ -42,15 +42,17 @@ class Player(pygame.sprite.Sprite):
     # 初始化玩家角色
     def __init__(self, x: int, y: int, skin_name: str = "default"):
         super().__init__()
-        self.height = 50  # 预设高度
-        self.speed = 4  # 默认速度
-        self.speed_up_timer = 0  # 加速计时器
+        self.height = 50                # 预设高度
+        self.speed = 4                  # 默认速度
+        self.speed_up_timer = 0         # 加速计时器
         self.skin_name = skin_name
         self.facing_right = True
-        self.move_frame = 0  # 移动帧索引
+        self.move_frame = 0             # 移动帧索引
         self.move_animation_speed = 10  # 移动动画速度
-        self.invincible = False  # 无敌状态
-        self.invincible_timer = 0  # 无敌计时器
+        self.invincible = False         # 无敌状态
+        self.invincible_timer = 0       # 无敌计时器
+        self.freeze_timer = 0           # 冻结计时器
+        self.freeze_duration = 0        # 冻结总时长
 
         # 尝试加载皮肤图片
         self.idle_image, self.move_images, self.width = self._load_skin(skin_name)
@@ -163,18 +165,26 @@ class Player(pygame.sprite.Sprite):
 
     # 更新玩家状态
     def update(self, platforms: pygame.sprite.Group, coins: pygame.sprite.Group):
-        # 应用重力
-        self.vel_y += self.gravity
-        if self.vel_y > 20:  # 限制最大下落速度
-            self.vel_y = 20
+        # 处理冻结计时器
+        if self.freeze_timer > 0:
+            self.freeze_timer -= 1
+            if self.freeze_timer == 0:
+                self.freeze_duration = 0  # 重置冻结总时长        
+        
+        # 只有在非冻结状态下才处理移动
+        if self.freeze_timer <= 0:
+            # 应用重力
+            self.vel_y += self.gravity
+            if self.vel_y > 20:  # 限制最大下落速度
+                self.vel_y = 20
 
-        # 移动并检测平台碰撞
-        self.rect.x += self.vel_x
-        self.check_collision(self.vel_x, 0, platforms)
+            # 移动并检测平台碰撞
+            self.rect.x += self.vel_x
+            self.check_collision(self.vel_x, 0, platforms)
 
-        self.rect.y += self.vel_y
-        self.on_ground = False
-        self.check_collision(0, self.vel_y, platforms)
+            self.rect.y += self.vel_y
+            self.on_ground = False
+            self.check_collision(0, self.vel_y, platforms)
 
         # 检测金币碰撞
         pygame.sprite.spritecollide(self, coins, True)
@@ -268,6 +278,15 @@ class Player(pygame.sprite.Sprite):
             self.invincible = True
             self.invincible_timer = 300  # 5 秒（60 帧/秒）
             item.kill()
+        elif item.item_type == "kunge":
+            kunge_sound = pygame.mixer.Sound("resource/sound/ji.mp3")
+            kunge_sound.play()
+            item.kill()
+        elif item.item_type == "canteen":  # 食堂道具效果
+            self.freeze_timer = 300  # 5秒 (60帧/秒)
+            self.freeze_duration = 300
+            item.kill()
+
 
 # 平台类，在此处设置平台图片
 class Platform(pygame.sprite.Sprite):
@@ -388,7 +407,8 @@ class Item(pygame.sprite.Sprite):
     ITEM_TYPES = {
         "speed_up": "resource/image/item/speed_up.png",
         "kunge" : "resource/image/item/kunge.png",
-        "invincible" : "resource/image/item/invincible.png"
+        "invincible" : "resource/image/item/invincible.png",
+        "canteen" : "resource/image/item/canteen.png"
     }
     
     # 定义道具的最大尺寸

@@ -101,7 +101,7 @@ class Level:
 
     # 第一关布局
     def setup_level_1(self):
-        self.level_description = "难度稍有提升，注意躲避障碍物，使用道具可以加速通过。"
+        self.level_description = "先吃饭还是先上学？"
         # 地面
         self.platforms.add(Platform(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50, platform_type="platform_2"))
 
@@ -119,9 +119,10 @@ class Level:
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
+        self.items.add(Item(420, 500, "canteen"))
 
         # 终点
-        self.goal = Goal(350, 500)
+        self.goal = Goal(600, 500)
 
     # 第二关布局
     def setup_level_2(self):
@@ -488,7 +489,6 @@ class Level:
         self.platforms.add(Platform(800, 100, 20, 100, "platform_1"))
         self.platforms.add(Platform(600, 50, 20, 100, "platform_1"))
         self.platforms.add(Platform(800, 0, 20, 100, "platform_1"))
-        self.platforms.add(Platform(400, -50, 20, 100, "platform_1"))
 
         # 金币
         self.coins.add(Coin(140, 430))
@@ -500,7 +500,6 @@ class Level:
         self.coins.add(Coin(740, 130))
         self.coins.add(Coin(540, 80))
         self.coins.add(Coin(740, 30))
-        self.coins.add(Coin(540, -20))
 
         # 障碍物
         self.obstacles.add(Obstacle(250, 300, "obstacle_1"))
@@ -511,18 +510,12 @@ class Level:
         self.obstacles.add(Obstacle(850, 100, "obstacle_2"))
         self.obstacles.add(Obstacle(650, 50, "obstacle_1"))
         self.obstacles.add(Obstacle(850, 0, "obstacle_2"))
-        self.obstacles.add(Obstacle(450, -50, "obstacle_1"))
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
         self.items.add(Item(420, 370, "kunge"))
-        self.items.add(Item(620, 320, "kunge"))
         self.items.add(Item(320, 270, "kunge"))
-        self.items.add(Item(520, 220, "kunge"))
-        self.items.add(Item(720, 170, "kunge"))
-        self.items.add(Item(520, 120, "kunge"))
-        self.items.add(Item(720, 70, "kunge"))
         self.items.add(Item(520, 20, "kunge"))
 
         # 终点
-        self.goal = Goal(750, -50)
+        self.goal = Goal(750, 0)

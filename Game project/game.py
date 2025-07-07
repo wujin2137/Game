@@ -807,7 +807,7 @@ class Game:
             time_text = self.font.render(f"时间: {max(0, level.time_limit - game_time):.1f}秒", True, WHITE)
             coin_text = self.font.render(f"金币: {coins_collected}/{total_coins_in_level}", True, WHITE)
             level_text = self.font.render(f"关卡 {self.current_level}", True, WHITE)
-            desc_text = self.font.render(level.level_description, True, WHITE)  # 新增：关卡描述文本
+            desc_text = self.font.render(level.level_description, True, WHITE)
 
             self.screen.blit(time_text, (20, 20))
             self.screen.blit(coin_text, (20, 50))
@@ -816,10 +816,15 @@ class Game:
             # 显示无敌时间
             if player.invincible:
                 invincible_text = self.font.render(f"无敌时间: {player.invincible_timer / 60:.1f}秒", True, WHITE)
-                self.screen.blit(invincible_text, (20, 80))  # 调整位置，避免与关卡描述重叠
-
+                self.screen.blit(invincible_text, (20, 80))
+            
+            # 显示冻结剩余时间
+            if player.freeze_timer > 0:
+                freeze_text = self.font.render(f"吃饭中: {player.freeze_timer / 60:.1f}秒", True, RED)
+                self.screen.blit(freeze_text, (20, 110 if player.invincible else 80))
+            
             # 在屏幕底部显示关卡描述
-            self.screen.blit(desc_text, (20, SCREEN_HEIGHT - 40))  # 新增：关卡描述显示
+            self.screen.blit(desc_text, (20, SCREEN_HEIGHT - 40)) 
 
             pygame.display.flip()
             self.clock.tick(60)
