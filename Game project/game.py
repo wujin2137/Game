@@ -17,6 +17,20 @@ class Game:
     def __init__(self):
         pygame.init()
         pygame.font.init()
+        pygame.mixer.init()
+        # 加载音效
+        try:
+            # 背景音乐
+            self.bg_music = pygame.mixer.Sound(resource_path("resource/sound/background.mp3"))
+            # 死亡音效
+            self.death_sound = pygame.mixer.Sound(resource_path("resource/sound/death.wav"))
+            # 通关音效
+            self.level_complete_sound = pygame.mixer.Sound(resource_path("resource/sound/level_complete.wav"))
+        except Exception as e:
+            print(f"加载音效失败: {e}")
+            self.bg_music = None
+            self.death_sound = None
+            self.level_complete_sound = None
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("跑酷闯关游戏")
         self.clock = pygame.time.Clock()
@@ -86,6 +100,9 @@ class Game:
 
     #游戏主循环
     def run(self):
+        # 播放背景音乐（循环播放）
+        if self.bg_music:
+            self.bg_music.play(-1)  # -1 表示循环播放
         while self.running:
             if self.current_screen == "menu":
                 self.menu_screen()
@@ -851,6 +868,9 @@ class Game:
                 elif self.game_state.selected_skin=="皮肤3" and obstacle.obstacle_type=="obstacle_1" and self.bo==1:
                     pass
                 elif not player.invincible:
+                    # 播放死亡音效
+                    if self.death_sound:
+                        self.death_sound.play()
                     running = False
                     self.current_screen = "game_over"
 
@@ -865,6 +885,13 @@ class Game:
 
             # 到达终点
             if level.goal and player.rect.colliderect(level.goal.rect):
+                # 播放通关音效
+                if self.level_complete_sound:
+                    self.level_complete_sound.play()
+                self.level_complete_coins = coins_collected
+                self.level_complete_time = game_time
+                running = False
+                self.current_screen = "level_complete"
                 if not level_requires_card or player.has_card:
                     self.level_complete_coins = coins_collected
                     self.level_complete_time = game_time
@@ -1069,6 +1096,9 @@ class Game:
     #游戏结束界面，显示失败信息和选项，在这里面设置背景图
     def game_over_screen(self):
         """游戏结束界面"""
+        # 播放死亡音效（如果之前没有播放）
+        if self.death_sound and not self.death_sound.get_num_channels():
+            self.death_sound.play()
         # 加载背景图（保持原比例，填充空白）
         try:
             original_bg = pygame.image.load(resource_path("resource/image/background/background5.webp")).convert()
@@ -1145,6 +1175,9 @@ class Game:
     #关卡完成界面，显示通关信息和统计，在这里面设置背景图
     def level_complete_screen(self):
         """关卡完成界面"""
+        # 播放通关音效（如果之前没有播放）
+        if self.level_complete_sound and not self.level_complete_sound.get_num_channels():
+            self.level_complete_sound.play()
         # 加载背景图（保持原比例，填充空白）
         try:
             original_bg = pygame.image.load(resource_path("resource/image/background/background6.webp")).convert()
