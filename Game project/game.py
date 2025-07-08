@@ -794,7 +794,7 @@ class Game:
                         elif result == "restart":
                             running = False
                             self.game_screen()
-                    if event.key == pygame.K_SPACE or event.key == pygame.K_UP:
+                    if event.key == pygame.K_SPACE or event.key == pygame.K_UP or event.key == pygame.K_w:
                         player.jump()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     # 技能触发逻辑
@@ -816,9 +816,9 @@ class Game:
 
             # 玩家移动控制
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_LEFT]:
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
                 player.move_left()
-            elif keys[pygame.K_RIGHT]:
+            elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                 player.move_right()
             else:
                 player.stop()

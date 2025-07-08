@@ -91,7 +91,7 @@ class Level:
     def setup_tutorial_level(self):
         # 教程关卡
         self.time_limit = 60
-        self.level_description = "求学之路艰难，勇敢的厦大学子请翻越崇山峻岭前往厦大的大门吧，沿途别忘了收集学费"
+        self.level_description = "方向键移动，空格或上跳跃，注意躲避耄耋"
 
         # 地面
         self.platforms.add(Platform(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50, platform_type="platform_2"))
@@ -115,12 +115,13 @@ class Level:
 
     # 第一关布局
     def setup_level_1(self):
-        self.level_description = "先吃饭还是先上学？"
+        self.level_description = "拾取自行车可以加速，选择吃饭需要多消耗5s"
         # 地面
         self.platforms.add(Platform(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50, platform_type="platform_2"))
 
         # 平台
         self.platforms.add(Platform(150, 470, 150, 20, platform_type="platform_1"))
+        self.platforms.add(Platform(550, 470, 150, 20, platform_type="platform_1"))
 
         # 墙壁
         self.platforms.add(Platform(200, 300, 20, 100, platform_type="platform_1"))
@@ -129,11 +130,11 @@ class Level:
         self.coins.add(Coin(190, 430))
 
         # 障碍物
-        self.obstacles.add(Obstacle(250, 300, "obstacle_1"))
+        self.obstacles.add(Obstacle(600, 300, "obstacle_1",move_pattern="vertical"))
 
         # 道具
         self.items.add(Item(220, 400, "speed_up"))
-        self.items.add(Item(420, 500, "canteen"))
+        self.items.add(Item(510, 500, "canteen"))
 
         # 终点
         self.goal = Goal(600, 500)
@@ -148,25 +149,25 @@ class Level:
 
         # 平台
         self.platforms.add(Platform(150, 470, 150, 20, "platform_1"))
-        self.platforms.add(Platform(350, 420, 100, 20, "platform_1"))
+        self.platforms.add(Platform(350, 380, 100, 20, "platform_1"))
         self.platforms.add(Platform(550, 370, 100, 20, "platform_1"))
+        self.platforms.add(Platform(50, 280, 70, 20, "platform_1"))
 
         # 墙壁
         self.platforms.add(Platform(200, 300, 20, 100, "platform_1"))
-        self.platforms.add(Platform(400, 350, 20, 80, "platform_1"))
 
         # 金币
         self.coins.add(Coin(190, 430))
-        self.coins.add(Coin(390, 400))
+        self.coins.add(Coin(390, 430))
         self.coins.add(Coin(590, 350))
+        self.coins.add(Coin(80, 210))
 
         # 障碍物
-        self.obstacles.add(Obstacle(250, 300, "obstacle_1"))
-        self.obstacles.add(Obstacle(450, 350, "obstacle_1"))
+        self.obstacles.add(Obstacle(150, 320, "obstacle_1" , move_pattern="horizontal"))
+        self.obstacles.add(Obstacle(470, 330, "obstacle_1" , move_pattern="vertical" ))
 
         # 道具
-        self.items.add(Item(220, 400, "speed_up"))
-        self.items.add(Item(360, 370, "kunge"))
+        self.items.add(Item(360, 330, "kunge"))
 
         # 终点
         self.goal = Goal(750, 500)
@@ -181,30 +182,29 @@ class Level:
 
         # 平台
         self.platforms.add(Platform(100, 450, 100, 20, "platform_1"))
-        self.platforms.add(Platform(300, 400, 100, 20, "platform_1"))
-        self.platforms.add(Platform(500, 350, 100, 20, "platform_1"))
+        self.platforms.add(Platform(250, 330, 100, 20, "platform_1"))
+        self.platforms.add(Platform(100, 210, 100, 20, "platform_1"))
+        self.platforms.add(Platform(250,  90, 100, 20, "platform_1"))
+        self.platforms.add(Platform(370, 450, 100, 20, "platform_1"))
+        self.platforms.add(Platform(530, 350, 100, 20, "platform_1"))
         self.platforms.add(Platform(700, 300, 100, 20, "platform_1"))
 
         # 墙壁
-        self.platforms.add(Platform(200, 300, 20, 100, "platform_1"))
-        self.platforms.add(Platform(400, 350, 20, 80, "platform_1"))
-        self.platforms.add(Platform(600, 300, 20, 100, "platform_1"))
+        self.platforms.add(Platform(350,  90, 20, 460, "platform_2"))
 
         # 金币
-        self.coins.add(Coin(140, 430))
-        self.coins.add(Coin(340, 380))
-        self.coins.add(Coin(540, 330))
-        self.coins.add(Coin(740, 280))
+        self.coins.add(Coin(140, 410))
+        self.coins.add(Coin(290, 290))
+        self.coins.add(Coin(140, 170))
+        self.coins.add(Coin(290,  60))
+        self.coins.add(Coin(410, 410))
+        self.coins.add(Coin(570, 310))
+        self.coins.add(Coin(700, 500))
 
-        # 障碍物
-        self.obstacles.add(Obstacle(250, 300, "obstacle_1"))
-        self.obstacles.add(Obstacle(450, 350, "obstacle_1"))
-        self.obstacles.add(Obstacle(650, 300, "obstacle_1"))
 
         # 道具
-        self.items.add(Item(220, 400, "speed_up"))
-        self.items.add(Item(420, 370, "kunge"))
-        self.items.add(Item(620, 320, "kunge"))
+        self.items.add(Item(270, 500, "speed_up"))
+        self.items.add(Item(410, 500, "kunge"))
 
         # 终点
         self.goal = Goal(750, 250)
