@@ -115,7 +115,7 @@ class Level:
 
     # 第一关布局
     def setup_level_1(self):
-        self.level_description = "拾取自行车可以加速，选择吃饭需要多消耗5s"
+        self.level_description = "需要校卡才能进入学校，记得先拿校卡"
         # 地面
         self.platforms.add(Platform(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50, platform_type="platform_2"))
 
@@ -125,22 +125,58 @@ class Level:
 
         # 墙壁
         self.platforms.add(Platform(200, 300, 20, 100, platform_type="platform_1"))
+        self.platforms.add(Platform(680, 470, 20, 80, platform_type="platform_1"))
 
         # 金币
         self.coins.add(Coin(190, 430))
 
         # 障碍物
-        self.obstacles.add(Obstacle(600, 300, "obstacle_1",move_pattern="vertical"))
+        self.obstacles.add(Obstacle(500, 420, "obstacle_1",move_pattern="vertical"))
 
         # 道具
-        self.items.add(Item(220, 400, "speed_up"))
-        self.items.add(Item(510, 500, "canteen"))
+        self.items.add(Item(720, 500, "card"))
 
         # 终点
         self.goal = Goal(600, 500)
 
     # 第二关布局
     def setup_level_2(self):
+        self.time_limit = 20
+        self.level_description = "时间限制缩短，注意控制好时间。"
+
+        # 地面
+        self.platforms.add(Platform(0, 550, 800, 50, "platform_2"))
+
+        # 平台
+        self.platforms.add(Platform(100, 450, 100, 20, "platform_1"))
+        self.platforms.add(Platform(250, 330, 100, 20, "platform_1"))
+        self.platforms.add(Platform(100, 210, 100, 20, "platform_1"))
+        self.platforms.add(Platform(250,  90, 100, 20, "platform_1"))
+        self.platforms.add(Platform(370, 450, 100, 20, "platform_1"))
+        self.platforms.add(Platform(530, 350, 100, 20, "platform_1"))
+        self.platforms.add(Platform(700, 300, 100, 20, "platform_1"))
+
+        # 墙壁
+        self.platforms.add(Platform(350,  90, 20, 460, "platform_2"))
+
+        # 金币
+        self.coins.add(Coin(140, 410))
+        self.coins.add(Coin(290, 290))
+        self.coins.add(Coin(140, 170))
+        self.coins.add(Coin(290,  60))
+        self.coins.add(Coin(410, 410))
+        self.coins.add(Coin(570, 310))
+        self.coins.add(Coin(700, 500))
+
+
+        # 道具
+        self.items.add(Item(410, 500, "kunge"))
+
+        # 终点
+        self.goal = Goal(750, 250)
+
+    # 第三关布局
+    def setup_level_3(self):
         self.time_limit = 120
         self.level_description = "鸡哥是不会伤害你的"
 
@@ -172,47 +208,10 @@ class Level:
         # 终点
         self.goal = Goal(750, 500)
 
-    # 第三关布局
-    def setup_level_3(self):
-        self.time_limit = 20
-        self.level_description = "时间限制缩短，注意控制好时间。"
-
-        # 地面
-        self.platforms.add(Platform(0, 550, 800, 50, "platform_2"))
-
-        # 平台
-        self.platforms.add(Platform(100, 450, 100, 20, "platform_1"))
-        self.platforms.add(Platform(250, 330, 100, 20, "platform_1"))
-        self.platforms.add(Platform(100, 210, 100, 20, "platform_1"))
-        self.platforms.add(Platform(250,  90, 100, 20, "platform_1"))
-        self.platforms.add(Platform(370, 450, 100, 20, "platform_1"))
-        self.platforms.add(Platform(530, 350, 100, 20, "platform_1"))
-        self.platforms.add(Platform(700, 300, 100, 20, "platform_1"))
-
-        # 墙壁
-        self.platforms.add(Platform(350,  90, 20, 460, "platform_2"))
-
-        # 金币
-        self.coins.add(Coin(140, 410))
-        self.coins.add(Coin(290, 290))
-        self.coins.add(Coin(140, 170))
-        self.coins.add(Coin(290,  60))
-        self.coins.add(Coin(410, 410))
-        self.coins.add(Coin(570, 310))
-        self.coins.add(Coin(700, 500))
-
-
-        # 道具
-        self.items.add(Item(270, 500, "speed_up"))
-        self.items.add(Item(410, 500, "kunge"))
-
-        # 终点
-        self.goal = Goal(750, 250)
-
     # 第四关布局
     def setup_level_4(self):
         self.time_limit = 30
-        self.level_description = "出现了路障，要是有辆大货车就好了"
+        self.level_description = ""
 
         # 地面
         self.platforms.add(Platform(0, 550, 800, 50, "platform_2"))
@@ -238,16 +237,17 @@ class Level:
         self.coins.add(Coin(340, 230))
 
         # 障碍物
-        self.obstacles.add(Obstacle(250, 300, "obstacle_1"))
-        self.obstacles.add(Obstacle(300, 510, "obstacle_2"))
+        self.obstacles.add(Obstacle(250, 280, "obstacle_1", move_pattern="vertical"))
+        self.obstacles.add(Obstacle(500, 510, "obstacle_2"))
         self.obstacles.add(Obstacle(650, 300, "obstacle_1"))
         self.obstacles.add(Obstacle(450, 200, "obstacle_1"))
 
         # 道具
-        self.items.add(Item(220, 400, "speed_up"))
+        # self.items.add(Item(220, 400, "speed_up"))
         self.items.add(Item(420, 370, "kunge"))
         self.items.add(Item(620, 320, "kunge"))
         self.items.add(Item(320, 270, "kunge"))
+        self.items.add(Item(600, 500, "card"))
 
         # 终点
         self.goal = Goal(750, 200)
@@ -291,7 +291,7 @@ class Level:
         self.obstacles.add(Obstacle(650, 150, "obstacle_1"))
 
         # 道具
-        self.items.add(Item(220, 400, "speed_up"))
+        # self.items.add(Item(220, 400, "speed_up"))
         self.items.add(Item(420, 370, "kunge"))
         self.items.add(Item(620, 320, "kunge"))
         self.items.add(Item(320, 270, "invincible"))
@@ -343,7 +343,7 @@ class Level:
         self.obstacles.add(Obstacle(850, 100, "obstacle_1"))
 
         # 道具
-        self.items.add(Item(220, 400, "speed_up"))
+        # self.items.add(Item(220, 400, "speed_up"))
         self.items.add(Item(420, 370, "kunge"))
         self.items.add(Item(620, 320, "kunge"))
         self.items.add(Item(320, 270, "invincible"))
@@ -400,7 +400,6 @@ class Level:
         self.obstacles.add(Obstacle(650, 50, "obstacle_1"))
 
         # 道具
-        self.items.add(Item(220, 400, "speed_up"))
         self.items.add(Item(420, 370, "kunge"))
         self.items.add(Item(620, 320, "kunge"))
         self.items.add(Item(320, 270, "invincible"))
@@ -462,7 +461,6 @@ class Level:
         self.obstacles.add(Obstacle(850, 0, "obstacle_1"))
 
         # 道具
-        self.items.add(Item(220, 400, "speed_up"))
         self.items.add(Item(420, 370, "kunge"))
         self.items.add(Item(620, 320, "kunge"))
         self.items.add(Item(320, 270, "kunge"))
@@ -526,7 +524,6 @@ class Level:
         self.obstacles.add(Obstacle(850, 0, "obstacle_2"))
 
         # 道具
-        self.items.add(Item(220, 400, "speed_up"))
         self.items.add(Item(420, 370, "kunge"))
         self.items.add(Item(320, 270, "kunge"))
         self.items.add(Item(520, 20, "kunge"))

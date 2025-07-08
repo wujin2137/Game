@@ -706,9 +706,20 @@ class Game:
     #游戏主界面，处理游戏逻辑和绘制，///创建精灵组、游戏循环在此///，背景图在level.py设置
     def game_screen(self):
         """游戏主界面"""
+
+        # 初始化变量
+        card_message_timer = 0
+
         # 加载关卡
         level = Level(self.current_level)
         total_coins_in_level = len(level.coins)  # 关卡初始金币总数
+        level_requires_card = False  # 标记关卡是否需要校卡
+
+        # 检查关卡是否需要校卡
+        for item in level.items:
+            if item.item_type == "card":
+                level_requires_card = True
+                break
 
         # 加载关卡背景
         level_background = level.load_background()
@@ -854,10 +865,20 @@ class Game:
 
             # 到达终点
             if level.goal and player.rect.colliderect(level.goal.rect):
-                self.level_complete_coins = coins_collected
-                self.level_complete_time = game_time
-                running = False
-                self.current_screen = "level_complete"
+                if not level_requires_card or player.has_card:
+                    self.level_complete_coins = coins_collected
+                    self.level_complete_time = game_time
+                    running = False
+                    self.current_screen = "level_complete"
+                else:
+                    card_message_timer = 60  # 显示消息60帧(约1秒)
+
+            # 绘制校卡提示消息
+            if card_message_timer > 0:
+                card_message = self.large_font.render("你没有校卡，不得进校", True, RED)
+                message_rect = card_message.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
+                self.screen.blit(card_message, message_rect)
+                card_message_timer -= 1
 
             # 超时或掉落处理
             if game_time > level.time_limit or player.rect.y > SCREEN_HEIGHT:

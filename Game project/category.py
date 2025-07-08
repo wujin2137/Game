@@ -59,6 +59,7 @@ class Player(pygame.sprite.Sprite):
         self.freeze_timer = 0           # 冻结计时器
         self.freeze_duration = 0        # 冻结总时长
         self.visible = True      
+        self.has_card = False
 
         # 尝试加载皮肤图片
         self.idle_image, self.move_images, self.width = self._load_skin(skin_name)
@@ -263,6 +264,9 @@ class Player(pygame.sprite.Sprite):
             self.freeze_timer = 300  # 5秒 (60帧/秒)
             self.freeze_duration = 300
             item.kill()
+        elif item.item_type == "card":  # 新增校卡效果
+            self.has_card = True
+            item.kill()
 
 # 技能动画精灵类
 class SkillAnimation(pygame.sprite.Sprite):
@@ -436,7 +440,8 @@ class Item(pygame.sprite.Sprite):
         "speed_up": resource_path("resource/image/item/speed_up.png"),
         "kunge" : resource_path("resource/image/item/kunge.png"),
         "invincible" : resource_path("resource/image/item/invincible.png"),
-        "canteen" : resource_path("resource/image/item/canteen.png")
+        "canteen" : resource_path("resource/image/item/canteen.png"),
+        "card": resource_path("resource/image/item/card.png")  
     }
     
     # 定义道具的最大尺寸
