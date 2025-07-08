@@ -1,7 +1,20 @@
 import pygame
 import os
-from category import Player, GameState, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, BLACK, RED, GREEN, BLUE, YELLOW
+import sys
+from category import Player, GameState, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, BLACK, RED, GREEN, BLUE, YELLOW,SkillAnimation
 from level import Level
+
+# 定义 resource_path 函数
+def resource_path(relative_path):
+    """获取资源文件的绝对路径"""
+    try:
+        # 如果程序被打包，获取打包后的资源路径
+        base_path = sys._MEIPASS
+    except Exception:
+        # 如果程序未打包，获取当前文件的目录
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 class Game:
     #初始化游戏类，设置游戏窗口、字体、游戏状态、设置主菜单背景图
@@ -14,15 +27,16 @@ class Game:
         self.game_state = GameState()
         self.running = True
         self.current_screen = "menu"
+        self.bo=0
         # 确保皮肤目录存在
-        if not os.path.exists("resource/image/skins"):
-            os.makedirs("resource/image/skins")
+        if not os.path.exists(resource_path("resource/image/skins")):
+            os.makedirs(resource_path("resource/image/skins"))
 
         # 尝试加载字体
         try:
             # 尝试加载自定义字体
-            self.font = pygame.font.Font("fonts/ARCADE_N.TTF", 24)
-            self.large_font = pygame.font.Font("fonts/ARCADE_N.TTF", 48)
+            self.font = pygame.font.Font(resource_path("fonts/ARCADE_N.TTF"), 24)
+            self.large_font = pygame.font.Font(resource_path("fonts/ARCADE_N.TTF"), 48)
         except FileNotFoundError:
             # 如果自定义字体不存在，尝试使用系统中可用的中文字体
             pygame.font.init()
@@ -48,7 +62,7 @@ class Game:
         #加载菜单背景，这里采用保持原比例，填充空白，知道怎么改图片即可
         try:
             # 加载原始背景图
-            original_bg = pygame.image.load("resource/image/background/menu.webp").convert()  #这边切换路径
+            original_bg = pygame.image.load(resource_path("resource/image/background/menu.webp")).convert()  #这边切换路径
             # 计算缩放比例（保持宽高比）
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT           
@@ -71,8 +85,8 @@ class Game:
             self.menu_background = None
 
         # 确保保存数据的文件夹存在
-        if not os.path.exists("saves"):
-            os.makedirs("saves")
+        if not os.path.exists(resource_path("saves")):
+            os.makedirs(resource_path("saves"))
 
     #游戏主循环
     def run(self):
@@ -195,7 +209,7 @@ class Game:
         # 加载背景图
         background = None
         try:
-            original_bg = pygame.image.load("resource/image/background/background4.webp").convert()  # 背景图
+            original_bg = pygame.image.load(resource_path("resource/image/background/background4.webp")).convert()  # 背景图
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
             new_width = SCREEN_WIDTH if bg_ratio <= screen_ratio else int(SCREEN_HEIGHT * bg_ratio)
@@ -209,14 +223,14 @@ class Game:
         
         star_img = None
         try:
-            star_img = pygame.image.load("resource/image/icons/star.png").convert_alpha()
+            star_img = pygame.image.load(resource_path("resource/image/icons/star.png")).convert_alpha()
             star_img = pygame.transform.scale(star_img, (20, 20))
         except:
             pass
         
         lock_img = None
         try:
-            lock_img = pygame.image.load("resource/image/icons/lock.png").convert_alpha()
+            lock_img = pygame.image.load(resource_path("resource/image/icons/lock.png")).convert_alpha()
             lock_img = pygame.transform.scale(lock_img, (50, 50))
         except:
             pass
@@ -346,7 +360,7 @@ class Game:
         
         # 加载背景图（保持原比例，填充空白）
         try:
-            original_bg = pygame.image.load("resource/image/background/background1.webp").convert()
+            original_bg = pygame.image.load(resource_path("resource/image/background/background1.webp")).convert()
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
             if bg_ratio > screen_ratio:
@@ -381,9 +395,9 @@ class Game:
                 # 尝试加载静止图像作为预览
                 skin_data = Player.SKIN_PATHS[skin_name]
                 if isinstance(skin_data["idle"], str):
-                    preview_image = pygame.image.load(skin_data["idle"]).convert_alpha()
+                    preview_image = pygame.image.load(resource_path(skin_data["idle"])).convert_alpha()
                 else:
-                    preview_image = pygame.image.load(skin_data["idle"][0]).convert_alpha()
+                    preview_image = pygame.image.load(resource_path(skin_data["idle"][0])).convert_alpha()
                 skin_previews[skin_name] = preview_image
             except:
                 # 如果加载失败，创建一个彩色矩形作为预览
@@ -417,7 +431,7 @@ class Game:
                 # 有多个移动帧，加载所有帧
                 for path in skin_data["move"]:
                     try:
-                        frame = pygame.image.load(path).convert_alpha()
+                        frame = pygame.image.load(resource_path(path)).convert_alpha()
                         frame = pygame.transform.scale(frame, (button_width - 20, button_height - 20))
                         frames.append(frame)
                     except:
@@ -427,9 +441,9 @@ class Game:
                 # 如果没有动画帧或加载失败，使用静止图像或默认图像
                 try:
                     if isinstance(skin_data["idle"], str):
-                        frame = pygame.image.load(skin_data["idle"]).convert_alpha()
+                        frame = pygame.image.load(resource_path(skin_data["idle"])).convert_alpha()
                     else:
-                        frame = pygame.image.load(skin_data["idle"][0]).convert_alpha()
+                        frame = pygame.image.load(resource_path(skin_data["idle"][0])).convert_alpha()
                     frame = pygame.transform.scale(frame, (button_width - 20, button_height - 20))
                     frames.append(frame)
                 except:
@@ -614,7 +628,7 @@ class Game:
         
         # 加载背景图（保持原比例，填充空白）
         try:
-            original_bg = pygame.image.load("resource\image/background/background1.webp").convert()
+            original_bg = pygame.image.load(resource_path("resource/image/background/background1.webp")).convert()
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
             if bg_ratio > screen_ratio:
@@ -694,6 +708,9 @@ class Game:
                     self.current_screen = None
 
     #游戏主界面，处理游戏逻辑和绘制，///创建精灵组、游戏循环在此///，背景图在level.py设置
+# 游戏主界面，处理游戏逻辑和绘制，///创建精灵组、游戏循环在此///，背景图在level.py设置
+# 游戏主界面，处理游戏逻辑和绘制，///创建精灵组、游戏循环在此///，背景图在level.py设置
+# 游戏主界面，处理游戏逻辑和绘制，///创建精灵组、游戏循环在此///，背景图在level.py设置
     def game_screen(self):
         """游戏主界面"""
         # 加载关卡
@@ -721,6 +738,41 @@ class Game:
         start_time = pygame.time.get_ticks()
         game_time = 0
         coins_collected = 0
+
+        # 新增玩法相关变量
+        skill_image = None
+        skill_available = True
+        skill_start_time = 0
+        skill_duration = 5000  # 技能持续时间（毫秒）
+        skill_cooldown = 20000  # 技能冷却时间（毫秒）
+        skill_rect = pygame.Rect(SCREEN_WIDTH - 60, SCREEN_HEIGHT // 2 - 25, 50, 50)  # 技能图标位置
+        
+        # 技能动画精灵
+        skill_animation = None
+        
+        # 玩家原始图像备份
+        player_original_image = None
+        
+        # 加载技能资源
+        if self.game_state.selected_skin == "皮肤3":
+            try:
+                # 加载技能图标
+                skill_image = pygame.image.load(resource_path("resource/image/skins/skin_3_jineng.png")).convert_alpha()
+                skill_image = pygame.transform.scale(skill_image, (50, 50))
+                
+                # 加载技能动画帧
+                skill_frames = []
+                for i in range(1, 4):
+                    img_path = resource_path(f"resource/image/skins/skin_3_move_{i}.png")
+                    img = pygame.image.load(img_path).convert_alpha()
+                    img = pygame.transform.scale(img, (player.rect.width, player.rect.height))
+                    skill_frames.append(img)
+                    
+                print(f"成功加载皮肤3技能资源: {len(skill_frames)}帧")
+            except Exception as e:
+                print(f"加载皮肤3技能图片时出错: {e}")
+                skill_frames = []
+                skill_image = None
 
         # 游戏循环
         running = True
@@ -751,6 +803,23 @@ class Game:
                             self.game_screen()
                     if event.key == pygame.K_SPACE:
                         player.jump()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    # 技能触发逻辑
+                    if (self.game_state.selected_skin == "皮肤3" and 
+                        skill_rect.collidepoint(event.pos) and 
+                        skill_available and 
+                        skill_frames):
+                        skill_start_time = pygame.time.get_ticks()
+                        skill_available = False
+                        print("技能已激活")
+                        
+                        # 备份玩家原始图像并隐藏玩家
+                        player_original_image = player.image
+                        player.visible = False
+                        
+                        # 创建技能动画精灵
+                        skill_animation = SkillAnimation(skill_frames, player.rect)
+                        all_sprites.add(skill_animation)
 
             # 玩家移动控制
             keys = pygame.key.get_pressed()
@@ -761,27 +830,23 @@ class Game:
             else:
                 player.stop()
 
-            # 更新玩家状态（只传原参数，避免报错）
-            player.update(level.platforms, level.coins)  # 这里去掉obstacles参数，匹配原方法定义
+            # 更新玩家状态
+            player.update(level.platforms, level.coins)
 
             # 更新已收集金币数
             coins_collected = total_coins_in_level - len(level.coins)
 
-            # 障碍物碰撞处理（核心逻辑）
-            # 1. 获取所有碰撞的障碍物
+            # 障碍物碰撞处理
             collided_obstacles = pygame.sprite.spritecollide(player, level.obstacles, False)
-
             for obstacle in collided_obstacles:
-                # 2. 判断条件：玩家用“皮肤2” 且 障碍物是“obstacle_2”
                 if self.game_state.selected_skin == "皮肤2" and obstacle.obstacle_type == "obstacle_2":
-                    # 3. 让障碍物向右快速移动（每帧移50像素，快速出屏幕）
                     obstacle.rect.x += 50
-                    # 4. 移出屏幕后从精灵组中删除
                     if obstacle.rect.x > SCREEN_WIDTH:
                         level.obstacles.remove(obstacle)
                         all_sprites.remove(obstacle)
+                elif self.game_state.selected_skin=="皮肤3" and obstacle.obstacle_type=="obstacle_1" and self.bo==1:
+                    pass
                 elif not player.invincible:
-                    # 其他情况（非无敌状态）：碰撞后游戏结束
                     running = False
                     self.current_screen = "game_over"
 
@@ -803,7 +868,11 @@ class Game:
                 self.current_screen = "game_over"
 
             # 绘制所有元素和UI
-            all_sprites.draw(self.screen)
+            for sprite in all_sprites:
+                if hasattr(sprite, 'visible') and not sprite.visible:
+                    continue
+                self.screen.blit(sprite.image, sprite.rect)
+                
             time_text = self.font.render(f"时间: {max(0, level.time_limit - game_time):.1f}秒", True, WHITE)
             coin_text = self.font.render(f"金币: {coins_collected}/{total_coins_in_level}", True, WHITE)
             level_text = self.font.render(f"关卡 {self.current_level}", True, WHITE)
@@ -826,8 +895,71 @@ class Game:
             # 在屏幕底部显示关卡描述
             self.screen.blit(desc_text, (20, SCREEN_HEIGHT - 40)) 
 
+            # 技能系统逻辑
+            current_time = pygame.time.get_ticks()
+            
+            # 更新技能动画（如果存在）
+            if skill_animation and current_time - skill_start_time < skill_duration:
+                skill_animation.update(player.rect, player.facing_right)
+                self.bo=1
+            elif skill_animation:
+                # 技能结束，移除动画精灵并恢复玩家图像
+                all_sprites.remove(skill_animation)
+                self.bo=0
+                if player_original_image:
+                    player.image = player_original_image
+                    player.visible = True
+                    player_original_image = None
+                skill_animation = None
+
+            # 绘制技能图标
+            if self.game_state.selected_skin == "皮肤3" and skill_image:
+                if not skill_available:
+                    if current_time - skill_start_time < skill_duration:
+                        # 技能播放中
+                        progress = (current_time - skill_start_time) / skill_duration
+                        progress_rect = pygame.Rect(skill_rect.x, skill_rect.y, 
+                                                int(skill_rect.width * progress), skill_rect.height)
+                        skill_icon_copy = skill_image.copy()
+                        pygame.draw.rect(skill_icon_copy, (100, 100, 100), progress_rect)
+                        self.screen.blit(skill_icon_copy, skill_rect)
+                        self.bo=1
+                        
+                        # 显示技能倒计时
+                        skill_time_text = self.font.render(f"{(skill_duration - (current_time - skill_start_time)) // 1000 + 1}", 
+                                                        True, WHITE)
+                        self.screen.blit(skill_time_text, (skill_rect.centerx - 5, skill_rect.centery - 8))
+                    else:
+                        # 技能冷却中
+                        cooldown_progress = (current_time - skill_start_time - skill_duration) / (skill_cooldown - skill_duration)
+                        grayed_skill_image = skill_image.copy()
+                        pygame.transform.grayscale(grayed_skill_image)
+                        self.bo=0
+                        # 显示冷却进度条
+                        cooldown_rect = pygame.Rect(0, 0, 
+                                                skill_rect.width, skill_rect.height * (1 - cooldown_progress))
+                        pygame.draw.rect(grayed_skill_image, (100, 100, 100), cooldown_rect)
+                        self.screen.blit(grayed_skill_image, skill_rect)
+                        
+                        # 显示冷却剩余时间
+                        cooldown_text = self.font.render(f"{int((skill_cooldown - (current_time - skill_start_time)) // 1000 + 1)}", 
+                                                    True, WHITE)
+                        self.screen.blit(cooldown_text, (skill_rect.centerx - 5, skill_rect.centery - 8))
+                        
+                        # 检查冷却是否结束
+                        if current_time - skill_start_time >= skill_cooldown:
+                            skill_available = True
+                else:
+                    # 技能可用 - 正常显示图标
+                    self.screen.blit(skill_image, skill_rect)
+                    # 添加提示文字
+                    hint_text = self.font.render("点击释放技能", True, WHITE)
+                    hint_rect = hint_text.get_rect(midleft=(skill_rect.right + 10, skill_rect.centery))
+                    self.screen.blit(hint_text, hint_rect)
+
             pygame.display.flip()
             self.clock.tick(60)
+        # 技能动画精灵类
 
     #暂停菜单
     def pause_menu(self):
@@ -837,7 +969,7 @@ class Game:
 
         # 加载背景图（保持原比例，填充空白）
         try:
-            original_bg = pygame.image.load("resource/image/background/background9.webp").convert()
+            original_bg = pygame.image.load(resource_path("resource/image/background/background9.webp")).convert()
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
             if bg_ratio > screen_ratio:
@@ -921,7 +1053,7 @@ class Game:
         """游戏结束界面"""
         # 加载背景图（保持原比例，填充空白）
         try:
-            original_bg = pygame.image.load("resource/image/background/background5.webp").convert()
+            original_bg = pygame.image.load(resource_path("resource/image/background/background5.webp")).convert()
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
             if bg_ratio > screen_ratio:
@@ -997,7 +1129,7 @@ class Game:
         """关卡完成界面"""
         # 加载背景图（保持原比例，填充空白）
         try:
-            original_bg = pygame.image.load("resource/image/background/background6.webp").convert()
+            original_bg = pygame.image.load(resource_path("resource/image/background/background6.webp")).convert()
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
             if bg_ratio > screen_ratio:

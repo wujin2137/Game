@@ -31,11 +31,7 @@ class Player(pygame.sprite.Sprite):
         },
         "皮肤3": {
             "idle": "resource/image/skins/skin_3_idle.png",
-            "move": [
-                "resource/image/skins/skin_3_move_1.png",
-                "resource/image/skins/skin_3_move_2.png",
-                "resource/image/skins/skin_3_move_3.png"
-            ]
+            "move": "resource/image/skins/skin_3_move.png"  # 修改为单个图片路径
         },
     }
 
@@ -53,6 +49,7 @@ class Player(pygame.sprite.Sprite):
         self.invincible_timer = 0       # 无敌计时器
         self.freeze_timer = 0           # 冻结计时器
         self.freeze_duration = 0        # 冻结总时长
+        self.visible = True      
 
         # 尝试加载皮肤图片
         self.idle_image, self.move_images, self.width = self._load_skin(skin_name)
@@ -92,61 +89,32 @@ class Player(pygame.sprite.Sprite):
 
         # 加载移动图片
         move_images = []
-        if isinstance(skin_data["move"], list):
-            for path in skin_data["move"]:
-                try:
-                    move_image = pygame.image.load(path).convert_alpha()
-                    original_width, original_height = move_image.get_size()
-                    if original_height == 0:  # 防止除零错误
-                        ratio = 1
-                    else:
-                        ratio = original_width / original_height
-                    new_width = int(self.height * ratio)
-                    scaled_move_image = pygame.transform.scale(move_image, (new_width, self.height))
-                    move_images.append(scaled_move_image)
-                except:
-                    try:
-                        default_move = pygame.image.load(self.SKIN_PATHS["default"]["move"]).convert_alpha()
-                        original_width, original_height = default_move.get_size()
-                        if original_height == 0:  # 防止除零错误
-                            ratio = 1
-                        else:
-                            ratio = original_width / original_height
-                        new_width = int(self.height * ratio)
-                        move_image = pygame.Surface((new_width, self.height))
-                        move_image.fill((255, 100, 100))  # 默认颜色
-                        move_images.append(move_image)
-                    except:
-                        move_image = pygame.Surface((30, self.height))
-                        move_image.fill((255, 100, 100))  # 默认颜色
-                        move_images.append(move_image)
-        else:
+        try:
+            move_image = pygame.image.load(skin_data["move"]).convert_alpha()
+            original_width, original_height = move_image.get_size()
+            if original_height == 0:  # 防止除零错误
+                ratio = 1
+            else:
+                ratio = original_width / original_height
+            new_width = int(self.height * ratio)
+            scaled_move_image = pygame.transform.scale(move_image, (new_width, self.height))
+            move_images.append(scaled_move_image)
+        except:
             try:
-                move_image = pygame.image.load(skin_data["move"]).convert_alpha()
-                original_width, original_height = move_image.get_size()
+                default_move = pygame.image.load(self.SKIN_PATHS["default"]["move"]).convert_alpha()
+                original_width, original_height = default_move.get_size()
                 if original_height == 0:  # 防止除零错误
                     ratio = 1
                 else:
                     ratio = original_width / original_height
                 new_width = int(self.height * ratio)
-                scaled_move_image = pygame.transform.scale(move_image, (new_width, self.height))
-                move_images.append(scaled_move_image)
+                move_image = pygame.Surface((new_width, self.height))
+                move_image.fill((255, 100, 100))  # 默认颜色
+                move_images.append(move_image)
             except:
-                try:
-                    default_move = pygame.image.load(self.SKIN_PATHS["default"]["move"]).convert_alpha()
-                    original_width, original_height = default_move.get_size()
-                    if original_height == 0:  # 防止除零错误
-                        ratio = 1
-                    else:
-                        ratio = original_width / original_height
-                    new_width = int(self.height * ratio)
-                    move_image = pygame.Surface((new_width, self.height))
-                    move_image.fill((255, 100, 100))  # 默认颜色
-                    move_images.append(move_image)
-                except:
-                    move_image = pygame.Surface((30, self.height))
-                    move_image.fill((255, 100, 100))  # 默认颜色
-                    move_images.append(move_image)
+                move_image = pygame.Surface((30, self.height))
+                move_image.fill((255, 100, 100))  # 默认颜色
+                move_images.append(move_image)
 
         # 获取原始图像宽高比
         original_width, original_height = idle_image.get_size()
@@ -170,7 +138,7 @@ class Player(pygame.sprite.Sprite):
             self.freeze_timer -= 1
             if self.freeze_timer == 0:
                 self.freeze_duration = 0  # 重置冻结总时长        
-        
+
         # 只有在非冻结状态下才处理移动
         if self.freeze_timer <= 0:
             # 应用重力
@@ -287,7 +255,31 @@ class Player(pygame.sprite.Sprite):
             self.freeze_duration = 300
             item.kill()
 
-
+# 技能动画精灵类
+class SkillAnimation(pygame.sprite.Sprite):
+    def __init__(self, frames, player_rect):
+        super().__init__()
+        self.frames = frames
+        self.frame_index = 0
+        self.image = self.frames[self.frame_index]
+        self.rect = self.image.get_rect(center=player_rect.center)
+        self.animation_speed = 3  # 动画速度，数值越小越快
+        self.animation_timer = 0
+        
+    def update(self, player_rect, direction):
+        # 更新动画帧
+        self.animation_timer += 1
+        if self.animation_timer >= self.animation_speed:
+            self.animation_timer = 0
+            self.frame_index = (self.frame_index + 1) % len(self.frames)
+            self.image = self.frames[self.frame_index]
+            
+            # 确保动画方向与玩家一致
+            if direction != (self.rect.width > 0):  # 检查图像是否已翻转
+                self.image = pygame.transform.flip(self.image, True, False)
+        
+        # 跟随玩家位置
+        self.rect.center = player_rect.center
 # 平台类，在此处设置平台图片
 class Platform(pygame.sprite.Sprite):
     # 定义不同类型平台对应的图标路径
