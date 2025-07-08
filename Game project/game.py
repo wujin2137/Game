@@ -6,14 +6,10 @@ from level import Level
 
 # 定义 resource_path 函数
 def resource_path(relative_path):
-    """获取资源文件的绝对路径"""
     try:
-        # 如果程序被打包，获取打包后的资源路径
         base_path = sys._MEIPASS
     except Exception:
-        # 如果程序未打包，获取当前文件的目录
         base_path = os.path.abspath(".")
-
     return os.path.join(base_path, relative_path)
 
 class Game:
@@ -708,9 +704,6 @@ class Game:
                     self.current_screen = None
 
     #游戏主界面，处理游戏逻辑和绘制，///创建精灵组、游戏循环在此///，背景图在level.py设置
-# 游戏主界面，处理游戏逻辑和绘制，///创建精灵组、游戏循环在此///，背景图在level.py设置
-# 游戏主界面，处理游戏逻辑和绘制，///创建精灵组、游戏循环在此///，背景图在level.py设置
-# 游戏主界面，处理游戏逻辑和绘制，///创建精灵组、游戏循环在此///，背景图在level.py设置
     def game_screen(self):
         """游戏主界面"""
         # 加载关卡
@@ -768,7 +761,7 @@ class Game:
                     img = pygame.transform.scale(img, (player.rect.width, player.rect.height))
                     skill_frames.append(img)
                     
-                print(f"成功加载皮肤3技能资源: {len(skill_frames)}帧")
+                # print(f"成功加载皮肤3技能资源: {len(skill_frames)}帧")
             except Exception as e:
                 print(f"加载皮肤3技能图片时出错: {e}")
                 skill_frames = []
@@ -801,7 +794,7 @@ class Game:
                         elif result == "restart":
                             running = False
                             self.game_screen()
-                    if event.key == pygame.K_SPACE:
+                    if event.key == pygame.K_SPACE or event.key == pygame.K_UP:
                         player.jump()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     # 技能触发逻辑
@@ -849,6 +842,10 @@ class Game:
                 elif not player.invincible:
                     running = False
                     self.current_screen = "game_over"
+
+            # 障碍物移动
+            for obstacle in level.obstacles:
+                obstacle.update()
 
             # 道具碰撞处理
             if hasattr(level, 'items'):

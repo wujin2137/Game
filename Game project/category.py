@@ -6,13 +6,10 @@ from typing import List, Dict, Tuple, Optional
 
 # 定义 resource_path 函数
 def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
     try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
     except AttributeError:
         base_path = os.path.abspath(".")
-
     return os.path.join(base_path, relative_path)
 
 # 游戏常量
@@ -42,8 +39,8 @@ class Player(pygame.sprite.Sprite):
             "move": resource_path("resource/image/skins/skin_2_move.png")
         },
         "皮肤3": {
-            "idle": "resource/image/skins/skin_3_idle.png",
-            "move": "resource/image/skins/skin_3_move.png"  # 修改为单个图片路径
+            "idle": resource_path("resource/image/skins/skin_3_idle.png"),
+            "move": resource_path("resource/image/skins/skin_3_move.png")  # 修改为单个图片路径
         },
     }
 
@@ -251,7 +248,7 @@ class Player(pygame.sprite.Sprite):
     # 应用道具
     def apply_item_effect(self, item):
         if item.item_type == "speed_up":
-            self.speed = 6  # 加速
+            self.speed = 8  # 加速
             self.speed_up_timer = 300  # 5 秒（60 帧/秒）
             item.kill()
         elif item.item_type == "invincible":
@@ -262,7 +259,7 @@ class Player(pygame.sprite.Sprite):
             kunge_sound = pygame.mixer.Sound(resource_path("resource/sound/ji.mp3"))
             kunge_sound.play()
             item.kill()
-        elif item.item_type == "canteen":  # 食堂道具效果
+        elif item.item_type == "canteen":  
             self.freeze_timer = 300  # 5秒 (60帧/秒)
             self.freeze_duration = 300
             item.kill()
@@ -292,6 +289,7 @@ class SkillAnimation(pygame.sprite.Sprite):
         
         # 跟随玩家位置
         self.rect.center = player_rect.center
+
 # 平台类，在此处设置平台图片
 class Platform(pygame.sprite.Sprite):
     # 定义不同类型平台对应的图标路径
@@ -360,9 +358,15 @@ class Obstacle(pygame.sprite.Sprite):
     MAX_WIDTH = 40
     MAX_HEIGHT = 40
 
-    #初始化
-    def __init__(self, x: int, y: int, obstacle_type: str):
+    def __init__(self, x: int, y: int, obstacle_type: str, move_pattern=None):
         super().__init__()
+        self.obstacle_type = obstacle_type
+        self.move_pattern = move_pattern  # 移动模式: None(固定), "horizontal"(水平), "vertical"(垂直)
+        self.move_speed = 2  # 移动速度
+        self.move_distance = 100  # 移动距离
+        self.move_counter = 0  # 移动计数器
+        self.move_direction = 1  # 移动方向: 1(右/下), -1(左/上)
+        
         try:
             # 根据障碍物类型加载对应的图标
             icon_path = self.OBSTACLE_TYPES.get(obstacle_type)
@@ -379,9 +383,30 @@ class Obstacle(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.obstacle_type = obstacle_type
+        self.original_x = x  # 原始x坐标
+        self.original_y = y  # 原始y坐标
 
-    #按原始比例缩放图像        
+    def update(self):
+        """更新障碍物位置（如果设置了移动模式）"""
+        if self.move_pattern == "horizontal":
+            # 水平移动
+            self.rect.x += self.move_speed * self.move_direction
+            self.move_counter += self.move_speed
+            
+            if abs(self.move_counter) >= self.move_distance:
+                self.move_direction *= -1  # 反向移动
+                self.move_counter = 0
+                
+        elif self.move_pattern == "vertical":
+            # 垂直移动
+            self.rect.y += self.move_speed * self.move_direction
+            self.move_counter += self.move_speed
+            
+            if abs(self.move_counter) >= self.move_distance:
+                self.move_direction *= -1  # 反向移动
+                self.move_counter = 0
+
+    # 其他方法保持不变...
     def _scale_with_aspect_ratio(self, image):
         """按原始比例缩放图像，使其适应最大尺寸"""
         original_width, original_height = image.get_size()
@@ -396,14 +421,13 @@ class Obstacle(pygame.sprite.Sprite):
         # 缩放图像
         return pygame.transform.smoothscale(image, (new_width, new_height))
 
-    #创建默认图标    
     def _create_default_icon(self):
         """创建默认图标（绿色矩形带边框）"""
         surface = pygame.Surface((self.MAX_WIDTH, self.MAX_HEIGHT), pygame.SRCALPHA)
         surface.fill(GREEN)
         pygame.draw.rect(surface, (0, 150, 0), (5, 5, 30, 30))
         pygame.draw.rect(surface, WHITE, (10, 10, 20, 20), 2)
-        return surface    
+        return surface
 
 # 道具类，在此处设置道具图标
 class Item(pygame.sprite.Sprite):

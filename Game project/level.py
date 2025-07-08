@@ -1,17 +1,14 @@
 import pygame
+import sys
+import os
 from category import Platform, Coin, Goal, Obstacle, Item, SCREEN_WIDTH, SCREEN_HEIGHT
 
-# 假设这是 resource_path 函数，你可以根据实际情况修改
+# 定义 resource_path 函数
 def resource_path(relative_path):
-    """获取资源的绝对路径"""
-    import sys
-    import os
     try:
-        # PyInstaller 创建临时文件夹, 将路径存储于 _MEIPASS
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
-
     return os.path.join(base_path, relative_path)
 
 class Level:
@@ -108,6 +105,10 @@ class Level:
         self.coins.add(Coin(140, 430))
         self.coins.add(Coin(340, 380))
         self.coins.add(Coin(540, 330))
+
+        #障碍物
+        self.obstacles.add(Obstacle(250, 300, "obstacle_1", move_pattern="horizontal")) # 水平移动
+        self.obstacles.add(Obstacle(450, 350, "obstacle_1", move_pattern="vertical"))   # 垂直移动
 
         # 终点
         self.goal = Goal(700, 300)
