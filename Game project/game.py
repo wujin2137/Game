@@ -1149,8 +1149,8 @@ class Game:
             self.level_complete_time
         )
         
-        # 解锁下一个关卡
-        if self.current_level < 9:  # 假设总共有10个关卡
+        # 只有当完成的关卡是当前最高关卡时才解锁下一关
+        if self.current_level == self.game_state.current_level and self.current_level < 9:  # 假设总共有10个关卡
             self.game_state.current_level = self.current_level + 1
             self.game_state.save_game_data()
 
@@ -1201,7 +1201,6 @@ class Game:
                     pygame.time.delay(200)
                     if button["action"] == "next" and self.current_level < 9:  # 假设总共有10个关卡
                         self.current_level += 1
-                        self.game_state.current_level = self.current_level  # 更新 game_state 的当前关卡
                         self.current_screen = "game"
                     else:
                         self.current_screen = "menu"
@@ -1219,7 +1218,9 @@ class Game:
                     elif event.key == pygame.K_RETURN:
                         if self.current_level < 9:  # 假设总共有10个关卡
                             self.current_level += 1
-                            self.game_state.current_level = self.current_level  # 更新 game_state 的当前关卡
                             self.current_screen = "game"
                         else:
                             self.current_screen = "level_select"
+
+
+
