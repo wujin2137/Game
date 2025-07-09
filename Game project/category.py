@@ -591,3 +591,20 @@ class GameState:
                 self.unlocked_skins.append("皮肤3")
 
         self.save_game_data()
+
+    #生成战绩文本
+    def generate_stats_text(self):
+        stats_text = f"游戏统计\n\n"
+        stats_text += f"总积分: {self.total_score}\n"
+        stats_text += f"总金币: {self.total_coins}\n"
+        stats_text += f"已解锁皮肤: {len(self.unlocked_skins)}/{len(Player.SKIN_PATHS)}\n\n"
+        stats_text += "关卡统计:\n"
+        
+        for level in sorted(int(k) for k in self.level_stats.keys()):
+            stats = self.level_stats[str(level)]  # 确保使用字符串键访问
+            stats_text += f"关卡 {level + 1}: 金币 {stats['coins']}, 时间 {stats['time']:.1f}秒, 积分 {stats['score']}\n"
+        
+        return stats_text
+    
+
+    
