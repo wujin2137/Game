@@ -28,7 +28,14 @@ class Player(pygame.sprite.Sprite):
     SKIN_PATHS = {
         "default": {
             "idle": resource_path("resource/image/skins/default_idle.png"),
-            "move": resource_path("resource/image/skins/default_move.png")
+            "move": [
+                resource_path("resource/image/skins/default_move_1.png"),
+                resource_path("resource/image/skins/default_move_2.png"),
+                resource_path("resource/image/skins/default_move_3.png"),
+                resource_path("resource/image/skins/default_move_4.png"),
+                resource_path("resource/image/skins/default_move_5.png"),
+                resource_path("resource/image/skins/default_move_6.png"),
+                ]
         },
         "皮肤1": {
             "idle": resource_path("resource/image/skins/skin_1_idle.png"),
@@ -40,7 +47,7 @@ class Player(pygame.sprite.Sprite):
         },
         "皮肤3": {
             "idle": resource_path("resource/image/skins/skin_3_idle.png"),
-            "move": resource_path("resource/image/skins/skin_3_move.png")  # 修改为单个图片路径
+            "move": resource_path("resource/image/skins/skin_3_move.png")
         },
     }
 
@@ -86,49 +93,54 @@ class Player(pygame.sprite.Sprite):
             try:
                 default_idle = pygame.image.load(self.SKIN_PATHS["default"]["idle"]).convert_alpha()
                 original_width, original_height = default_idle.get_size()
-                if original_height == 0:  # 防止除零错误
+                if original_height == 0:
                     ratio = 1
                 else:
                     ratio = original_width / original_height
                 new_width = int(self.height * ratio)
                 idle_image = pygame.Surface((new_width, self.height))
-                idle_image.fill((255, 100, 100))  # 默认颜色
+                idle_image.fill((255, 100, 100)) 
             except:
                 idle_image = pygame.Surface((30, self.height))
-                idle_image.fill((255, 100, 100))  # 默认颜色
+                idle_image.fill((255, 100, 100))
 
         # 加载移动图片
         move_images = []
         try:
-            move_image = pygame.image.load(skin_data["move"]).convert_alpha()
-            original_width, original_height = move_image.get_size()
-            if original_height == 0:  # 防止除零错误
-                ratio = 1
+            # 处理多帧动画
+            if isinstance(skin_data["move"], list):
+                for path in skin_data["move"]:
+                    try:
+                        move_image = pygame.image.load(path).convert_alpha()
+                        original_width, original_height = move_image.get_size()
+                        ratio = original_width / original_height if original_height != 0 else 1
+                        new_width = int(self.height * ratio)
+                        scaled_move_image = pygame.transform.scale(move_image, (new_width, self.height))
+                        move_images.append(scaled_move_image)
+                    except Exception as e:
+                        print(f"无法加载移动帧图片: {path}, 错误: {e}")
+                        # 创建默认帧
+                        default_frame = pygame.Surface((30, self.height), pygame.SRCALPHA)
+                        default_frame.fill((100, 255, 100))
+                        move_images.append(default_frame)
             else:
-                ratio = original_width / original_height
-            new_width = int(self.height * ratio)
-            scaled_move_image = pygame.transform.scale(move_image, (new_width, self.height))
-            move_images.append(scaled_move_image)
-        except:
-            try:
-                default_move = pygame.image.load(self.SKIN_PATHS["default"]["move"]).convert_alpha()
-                original_width, original_height = default_move.get_size()
-                if original_height == 0:  # 防止除零错误
-                    ratio = 1
-                else:
-                    ratio = original_width / original_height
+                # 处理单张移动图片
+                move_image = pygame.image.load(skin_data["move"]).convert_alpha()
+                original_width, original_height = move_image.get_size()
+                ratio = original_width / original_height if original_height != 0 else 1
                 new_width = int(self.height * ratio)
-                move_image = pygame.Surface((new_width, self.height))
-                move_image.fill((255, 100, 100))  # 默认颜色
-                move_images.append(move_image)
-            except:
-                move_image = pygame.Surface((30, self.height))
-                move_image.fill((255, 100, 100))  # 默认颜色
-                move_images.append(move_image)
+                scaled_move_image = pygame.transform.scale(move_image, (new_width, self.height))
+                move_images.append(scaled_move_image)
+        except Exception as e:
+            print(f"无法加载移动图片: {e}")
+            # 创建默认移动帧
+            default_frame = pygame.Surface((30, self.height), pygame.SRCALPHA)
+            default_frame.fill((100, 255, 100))
+            move_images.append(default_frame)
 
         # 获取原始图像宽高比
         original_width, original_height = idle_image.get_size()
-        if original_height == 0:  # 防止除零错误
+        if original_height == 0:
             ratio = 1
         else:
             ratio = original_width / original_height
@@ -147,7 +159,7 @@ class Player(pygame.sprite.Sprite):
         if self.freeze_timer > 0:
             self.freeze_timer -= 1
             if self.freeze_timer == 0:
-                self.freeze_duration = 0  # 重置冻结总时长        
+                self.freeze_duration = 0      
 
         # 只有在非冻结状态下才处理移动
         if self.freeze_timer <= 0:
@@ -177,7 +189,7 @@ class Player(pygame.sprite.Sprite):
         if self.invincible_timer > 0:
             self.invincible_timer -= 1
             if self.invincible_timer == 0:
-                self.invincible = False  # 取消无敌状态
+                self.invincible = False 
 
         # 更新动画
         self.update_animation()
@@ -264,7 +276,7 @@ class Player(pygame.sprite.Sprite):
             self.freeze_timer = 300  # 5秒 (60帧/秒)
             self.freeze_duration = 300
             item.kill()
-        elif item.item_type == "card":  # 新增校卡效果
+        elif item.item_type == "card":
             self.has_card = True
             item.kill()
 
@@ -288,7 +300,7 @@ class SkillAnimation(pygame.sprite.Sprite):
             self.image = self.frames[self.frame_index]
             
             # 确保动画方向与玩家一致
-            if direction != (self.rect.width > 0):  # 检查图像是否已翻转
+            if direction != (self.rect.width > 0): 
                 self.image = pygame.transform.flip(self.image, True, False)
         
         # 跟随玩家位置
@@ -300,7 +312,6 @@ class Platform(pygame.sprite.Sprite):
     PLATFORM_TYPES = {
         "platform_1": resource_path("resource/image/platform/platform_1.png"),
         "platform_2": resource_path("resource/image/platform/platform_2.png"),
-        # 可以根据需要添加更多类型
     }
 
     #初始化
@@ -366,10 +377,10 @@ class Obstacle(pygame.sprite.Sprite):
         super().__init__()
         self.obstacle_type = obstacle_type
         self.move_pattern = move_pattern  # 移动模式: None(固定), "horizontal"(水平), "vertical"(垂直)
-        self.move_speed = 2  # 移动速度
-        self.move_distance = 100  # 移动距离
-        self.move_counter = 0  # 移动计数器
-        self.move_direction = 1  # 移动方向: 1(右/下), -1(左/上)
+        self.move_speed = 2         # 移动速度
+        self.move_distance = 100    # 移动距离
+        self.move_counter = 0       # 移动计数器
+        self.move_direction = 1     # 移动方向: 1(右/下), -1(左/上)
         
         try:
             # 根据障碍物类型加载对应的图标
@@ -391,7 +402,6 @@ class Obstacle(pygame.sprite.Sprite):
         self.original_y = y  # 原始y坐标
 
     def update(self):
-        """更新障碍物位置（如果设置了移动模式）"""
         if self.move_pattern == "horizontal":
             # 水平移动
             self.rect.x += self.move_speed * self.move_direction
@@ -412,7 +422,6 @@ class Obstacle(pygame.sprite.Sprite):
 
     # 其他方法保持不变...
     def _scale_with_aspect_ratio(self, image):
-        """按原始比例缩放图像，使其适应最大尺寸"""
         original_width, original_height = image.get_size()
         
         # 计算宽高比
@@ -426,7 +435,6 @@ class Obstacle(pygame.sprite.Sprite):
         return pygame.transform.smoothscale(image, (new_width, new_height))
 
     def _create_default_icon(self):
-        """创建默认图标（绿色矩形带边框）"""
         surface = pygame.Surface((self.MAX_WIDTH, self.MAX_HEIGHT), pygame.SRCALPHA)
         surface.fill(GREEN)
         pygame.draw.rect(surface, (0, 150, 0), (5, 5, 30, 30))
@@ -471,7 +479,6 @@ class Item(pygame.sprite.Sprite):
 
     #按原始比例缩放图像           
     def _scale_with_aspect_ratio(self, image):
-        """按原始比例缩放图像，使其适应最大尺寸"""
         original_width, original_height = image.get_size()
         
         # 计算宽高比
@@ -486,7 +493,6 @@ class Item(pygame.sprite.Sprite):
 
     #创建默认图标    
     def _create_default_icon(self):
-        """创建默认图标（黄色矩形带边框）"""
         surface = pygame.Surface((self.MAX_WIDTH, self.MAX_HEIGHT), pygame.SRCALPHA)
         surface.fill(YELLOW)
         pygame.draw.rect(surface, (200, 200, 0), (5, 5, 30, 30))
@@ -521,7 +527,7 @@ class GameState:
         self.total_score = 0
         self.unlocked_skins = ["default"]
         self.selected_skin = "default"
-        self.level_stats = {}  # 存储每关的统计数据
+        self.level_stats = {}
         self.load_game_data()
 
     #从json文件加载游戏存档数据
@@ -591,3 +597,20 @@ class GameState:
                 self.unlocked_skins.append("皮肤3")
 
         self.save_game_data()
+
+    #生成战绩文本
+    def generate_stats_text(self):
+        stats_text = f"游戏统计\n\n"
+        stats_text += f"总积分: {self.total_score}\n"
+        stats_text += f"总金币: {self.total_coins}\n"
+        stats_text += f"已解锁皮肤: {len(self.unlocked_skins)}/{len(Player.SKIN_PATHS)}\n\n"
+        stats_text += "关卡统计:\n"
+        
+        for level in sorted(int(k) for k in self.level_stats.keys()):
+            stats = self.level_stats[str(level)]  # 确保使用字符串键访问
+            stats_text += f"关卡 {level + 1}: 金币 {stats['coins']}, 时间 {stats['time']:.1f}秒, 积分 {stats['score']}\n"
+        
+        return stats_text
+    
+
+
