@@ -28,9 +28,9 @@ class Game:
         if not os.path.exists(resource_path("resource/image/skins")):
             os.makedirs(resource_path("resource/image/skins"))
 
-        # 加载字体
+        # 尝试加载字体
         try:
-            # 加载自定义字体
+            # 尝试加载自定义字体
             self.font = pygame.font.Font(resource_path("fonts/ARCADE_N.TTF"), 24)
             self.large_font = pygame.font.Font(resource_path("fonts/ARCADE_N.TTF"), 48)
         except FileNotFoundError:
@@ -46,6 +46,7 @@ class Game:
                     found_font = font_name
                     break
 
+            # 如果找到中文字体，则使用它，否则使用系统默认字体
             if found_font:
                 self.font = pygame.font.SysFont(found_font, 24)
                 self.large_font = pygame.font.SysFont(found_font, 48)
@@ -54,7 +55,7 @@ class Game:
                 self.font = pygame.font.SysFont(None, 24)
                 self.large_font = pygame.font.SysFont(None, 48)
 
-        #加载菜单背景，保持原比例，填充空白，
+        #加载菜单背景，这里采用保持原比例，填充空白，知道怎么改图片即可
         try:
             # 加载原始背景图
             original_bg = pygame.image.load(resource_path("resource/image/background/menu.webp")).convert()  #这边切换路径
@@ -119,8 +120,8 @@ class Game:
             self.screen.blit(title_text, title_rect)
             
             # 绘制按钮
-            button_width, button_height = 220, 60  
-            button_radius = 12 
+            button_width, button_height = 220, 60  # 增大按钮尺寸
+            button_radius = 12  # 圆角半径
             buttons = [
                 {"text": "开始游戏", "y": 220, "action": "level_select"},
                 {"text": "选择皮肤", "y": 300, "action": "skins"},  # 调整按钮间距
@@ -139,20 +140,20 @@ class Game:
                 
                 # 根据按钮状态选择颜色
                 if is_clicked:
-                    button_color = (40, 110, 200)   # 点击时的深蓝色
-                    text_color = (230, 230, 230)    # 点击时的文本颜色
+                    button_color = (40, 110, 200)  # 点击时的深蓝色
+                    text_color = (230, 230, 230)  # 点击时的文本颜色
                     border_color = (255, 255, 255)  # 点击时的边框颜色
-                    shadow_color = (0, 0, 0, 0)     # 点击时不显示阴影
+                    shadow_color = (0, 0, 0, 0)  # 点击时不显示阴影
                 elif is_hovered:
-                    button_color = (70, 140, 240)   # 悬停时的亮蓝色
+                    button_color = (70, 140, 240)  # 悬停时的亮蓝色
                     text_color = WHITE
                     border_color = (255, 255, 255)
-                    shadow_color = (0, 0, 0, 60)    # 悬停时的半透明阴影
+                    shadow_color = (0, 0, 0, 60)  # 悬停时的半透明阴影
                 else:
-                    button_color = (50, 120, 220)   # 默认蓝色
+                    button_color = (50, 120, 220)  # 默认蓝色
                     text_color = WHITE
                     border_color = (220, 220, 220)
-                    shadow_color = (0, 0, 0, 40)    # 默认半透明阴影
+                    shadow_color = (0, 0, 0, 40)  # 默认半透明阴影
                 
                 # 绘制按钮阴影
                 shadow_rect = pygame.Rect(button_x + 3, button_y + 3, button_width, button_height)
@@ -236,12 +237,12 @@ class Game:
             if background:
                 self.screen.blit(background, (0, 0))
             else:
-                # 渐变背景
+                # 渐变背景 fallback（保持原逻辑）
                 for y in range(SCREEN_HEIGHT):
                     color = (0, 0, max(50, int(150 * y / SCREEN_HEIGHT)))
                     pygame.draw.line(self.screen, color, (0, y), (SCREEN_WIDTH, y))
             
-            # 绘制标题
+            # 绘制标题（保持原逻辑）
             title_text = self.large_font.render("选择关卡", True, WHITE)
             title_shadow = self.large_font.render("选择关卡", True, (100, 100, 100))
             title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 80))
@@ -257,20 +258,20 @@ class Game:
             mouse_pos = pygame.mouse.get_pos()
             
             for level in range(10):
-                row = level // 5 
+                row = level // 5  # 0: 第一行，1: 第二行
                 col = level % 5
                 x = start_x + col * (button_size + margin)
                 y = start_y + row * (button_size + margin)
                 
                 rect = pygame.Rect(x, y, button_size, button_size)
                 
-                # 更新悬停状态
+                # 更新悬停状态（移除背景索引切换逻辑）
                 if level <= self.game_state.current_level:
                     level_buttons[level]["hover"] = rect.collidepoint(mouse_pos)
                 else:
                     level_buttons[level]["hover"] = False
                 
-                # 平滑缩放动画
+                # 平滑缩放动画（保持原逻辑）
                 target_scale = 1.1 if level_buttons[level]["hover"] else 1.0
                 level_buttons[level]["scale"] = max(1.0, min(1.1, level_buttons[level]["scale"] + (target_scale - level_buttons[level]["scale"]) * 0.1))
                 scale = level_buttons[level]["scale"]
@@ -278,7 +279,7 @@ class Game:
                 scale_offset = (scaled_size - button_size) // 2
                 
                 if level <= self.game_state.current_level:
-                    # 已解锁关卡绘制
+                    # 已解锁关卡绘制（保持原逻辑）
                     button_color = (50, 150, 255) if level_buttons[level]["hover"] else (30, 100, 200)
                     border_color = (200, 200, 0) if level == self.game_state.current_level else (200, 200, 200)
                     
@@ -307,7 +308,7 @@ class Game:
                         self.current_level = level
                         self.current_screen = "game"
                 else:
-                    # 未解锁关卡绘制
+                    # 未解锁关卡绘制（保持原逻辑）
                     button_surf = pygame.Surface((button_size, button_size), pygame.SRCALPHA)
                     pygame.draw.rect(button_surf, (50, 50, 50, 200), (0, 0, button_size, button_size), border_radius=15)
                     pygame.draw.rect(button_surf, (100, 100, 100), (0, 0, button_size, button_size), width=2, border_radius=15)
@@ -327,7 +328,7 @@ class Game:
                     unlock_rect = unlock_text.get_rect(center=(x + button_size // 2, y + button_size + 15))
                     self.screen.blit(unlock_text, unlock_rect)
             
-            # 返回按钮
+            # 返回按钮（保持原逻辑）
             back_button = pygame.Rect(SCREEN_WIDTH // 2 - 75, SCREEN_HEIGHT - 80, 150, 50)
             back_color = (200, 50, 50) if back_button.collidepoint(mouse_pos) else (150, 40, 40)
             for i in range(back_button.height):
@@ -376,7 +377,8 @@ class Game:
             "default": "默认皮肤",
             "皮肤1": "无额外属性加成",
             "皮肤2": "无视路障",
-            "皮肤3": "可释放技能"
+            "皮肤3": "皮肤3"
+            # 可以根据实际情况添加更多皮肤文案
         }
 
         skin_names = list(Player.SKIN_PATHS.keys())
@@ -401,8 +403,8 @@ class Game:
                 preview_image.fill(colors[color_index])
                 skin_previews[skin_name] = preview_image
 
-        button_width, button_height = 120, 120
-        margin = 60 
+        button_width, button_height = 120, 120  # 保持按钮尺寸
+        margin = 60  # 增加皮肤之间的间距
         buttons_per_row = 2
 
         # 左右切换按钮
@@ -619,9 +621,10 @@ class Game:
     #游戏统计界面，显示游戏进度和成就，在这里面设置背景图
     def stats_screen(self):
         """游戏统计界面"""
+        
         # 加载背景图（保持原比例，填充空白）
         try:
-            original_bg = pygame.image.load(resource_path("resource/image/background/background3.webp")).convert()
+            original_bg = pygame.image.load(resource_path("resource/image/background/background1.webp")).convert()
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
             if bg_ratio > screen_ratio:
@@ -637,10 +640,6 @@ class Game:
         except:
             background = None
 
-        # 创建滚动变量
-        scroll_y = 0
-        content_height = 600  # 初始估计值，绘制时计算实际高度
-
         while self.current_screen == "stats":
             self.screen.fill(BLACK)
             if background:
@@ -648,22 +647,13 @@ class Game:
             else:
                 self.screen.fill(BLACK)
 
-            # 绘制半透明背景覆盖层
-            overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-            overlay.fill((0, 0, 0, 180))
-            self.screen.blit(overlay, (0, 0))
-
             # 绘制标题
             title_text = self.large_font.render("游戏统计", True, WHITE)
-            title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 50))
+            title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 100))
             self.screen.blit(title_text, title_rect)
 
-            # 创建内容表面（用于滚动）
-            content_surface = pygame.Surface((SCREEN_WIDTH - 40, content_height), pygame.SRCALPHA)
-            content_surface.fill((0, 0, 0, 0))
-
             # 绘制总统计
-            stats_y = 20
+            stats_y = 180
             total_texts = [
                 f"总积分: {self.game_state.total_score}",
                 f"总金币: {self.game_state.total_coins}",
@@ -672,123 +662,58 @@ class Game:
 
             for text in total_texts:
                 stats_surface = self.font.render(text, True, WHITE)
-                content_surface.blit(stats_surface, (20, stats_y))
+                self.screen.blit(stats_surface, (100, stats_y))
                 stats_y += 40
 
-            # 绘制关卡统计标题
-            level_title = self.font.render("关卡统计:", True, WHITE)
-            content_surface.blit(level_title, (20, stats_y + 20))
-            stats_y += 60
-
             # 绘制关卡统计
-            for level in range(10): 
-                level_key = str(level) 
-                if level_key in self.game_state.level_stats:
-                    stats = self.game_state.level_stats[level_key]
+            level_title = self.font.render("关卡统计:", True, WHITE)
+            self.screen.blit(level_title, (100, stats_y + 20))
+
+            stats_y += 60
+            for level in range(len(self.game_state.level_stats)):
+                if level in self.game_state.level_stats:
+                    stats = self.game_state.level_stats[level]
                     level_text = f"关卡 {level + 1}: 金币 {stats['coins']}, 时间 {stats['time']:.1f}秒, 积分 {stats['score']}"
                 else:
                     level_text = f"关卡 {level + 1}: 未完成"
 
                 level_surface = self.font.render(level_text, True, WHITE)
-                content_surface.blit(level_surface, (20, stats_y))
+                self.screen.blit(level_surface, (100, stats_y))
                 stats_y += 40
 
-            # 更新实际内容高度
-            content_height = stats_y + 20
-
-            # 创建带滚动条的显示区域
-            display_area = pygame.Rect(20, 100, SCREEN_WIDTH - 40, SCREEN_HEIGHT - 200)
-            clipped_surface = pygame.Surface((display_area.width, display_area.height), pygame.SRCALPHA)
-            clipped_surface.blit(content_surface, (0, -scroll_y))
-
-            # 绘制显示区域边框
-            pygame.draw.rect(self.screen, WHITE, display_area, 2)
-            self.screen.blit(clipped_surface, display_area.topleft)
-
-            # 绘制滚动条
-            if content_height > display_area.height:
-                scroll_ratio = display_area.height / content_height
-                scroll_bar_height = max(30, int(display_area.height * scroll_ratio))
-                scroll_pos_ratio = scroll_y / (content_height - display_area.height)
-                scroll_bar_y = display_area.y + int((display_area.height - scroll_bar_height) * scroll_pos_ratio)
-                
-                scroll_bar_rect = pygame.Rect(display_area.right - 10, scroll_bar_y, 8, scroll_bar_height)
-                pygame.draw.rect(self.screen, (200, 200, 200), scroll_bar_rect)
-                pygame.draw.rect(self.screen, WHITE, scroll_bar_rect, 1)
-
-            # 绘制按钮
-            button_width, button_height = 150, 50
-            button_y = SCREEN_HEIGHT - 80
-
             # 返回按钮
-            back_button = pygame.Rect((SCREEN_WIDTH - button_width) // 2 - 90, button_y, button_width, button_height)
-            back_color = RED if back_button.collidepoint(pygame.mouse.get_pos()) else (200, 0, 0)
-            pygame.draw.rect(self.screen, back_color, back_button)
+            back_button = pygame.Rect((SCREEN_WIDTH - 150) // 2, 500, 150, 50)
+            color = RED if back_button.collidepoint(pygame.mouse.get_pos()) else (200, 0, 0)
+            pygame.draw.rect(self.screen, color, back_button)
             pygame.draw.rect(self.screen, WHITE, back_button, 2)
+
             back_text = self.font.render("返回", True, WHITE)
-            self.screen.blit(back_text, back_text.get_rect(center=back_button.center))
+            back_rect = back_text.get_rect(center=back_button.center)
+            self.screen.blit(back_text, back_rect)
 
-            # 下载战绩按钮
-            download_button = pygame.Rect((SCREEN_WIDTH - button_width) // 2 + 90, button_y, button_width, button_height)
-            download_color = BLUE if download_button.collidepoint(pygame.mouse.get_pos()) else (0, 0, 200)
-            pygame.draw.rect(self.screen, download_color, download_button)
-            pygame.draw.rect(self.screen, WHITE, download_button, 2)
-            download_text = self.font.render("下载战绩", True, WHITE)
-            self.screen.blit(download_text, download_text.get_rect(center=download_button.center))
-
-            # 处理鼠标滚轮事件
-            mouse_pos = pygame.mouse.get_pos()
-            mouse_pressed = pygame.mouse.get_pressed()
-            
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.running = False
-                    self.current_screen = None
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 4:  # 滚轮上滚
-                        scroll_y = max(0, scroll_y - 20)
-                    elif event.button == 5:  # 滚轮下滚
-                        scroll_y = min(content_height - display_area.height, scroll_y + 20)
-                    elif back_button.collidepoint(event.pos):
-                        pygame.time.delay(200)
-                        self.current_screen = "menu"
-                    elif download_button.collidepoint(event.pos):
-                        pygame.time.delay(200)
-                        # 生成战绩文本
-                        stats_text = self.game_state.generate_stats_text()
-                        
-                        # 保存到文件
-                        try:
-                            with open(resource_path("saves/game_stats.txt"), "w", encoding="utf-8") as f:
-                                f.write(stats_text)
-                            
-                            # 显示下载成功消息
-                            success_text = self.font.render("战绩已保存到saves/game_stats.txt", True, RED)
-                            success_rect = success_text.get_rect(center=(SCREEN_WIDTH//2, 86))
-                            self.screen.blit(success_text, success_rect)
-                            pygame.display.flip()
-                            pygame.time.delay(2000)  # 显示2秒
-                        except Exception as e:
-                            print(f"保存战绩失败: {e}")
-                            error_text = self.font.render("保存失败!", True, RED)
-                            error_rect = error_text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT - 30))
-                            self.screen.blit(error_text, error_rect)
-                            pygame.display.flip()
-                            pygame.time.delay(2000)  # 显示2秒
+            if pygame.mouse.get_pressed()[0] and back_button.collidepoint(pygame.mouse.get_pos()):
+                pygame.time.delay(200)
+                self.current_screen = "menu"
 
             pygame.display.flip()
             self.clock.tick(60)
 
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                    self.current_screen = None
+
     #游戏主界面，处理游戏逻辑和绘制，///创建精灵组、游戏循环在此///，背景图在level.py设置
     def game_screen(self):
+        """游戏主界面"""
 
         # 初始化变量
         card_message_timer = 0
 
         # 加载关卡
         level = Level(self.current_level)
-        total_coins_in_level = len(level.coins)     # 关卡初始金币总数
-        level_requires_card = False                 # 标记关卡是否需要校卡
+        total_coins_in_level = len(level.coins)  # 关卡初始金币总数
+        level_requires_card = False  # 标记关卡是否需要校卡
 
         # 检查关卡是否需要校卡
         for item in level.items:
@@ -846,6 +771,8 @@ class Game:
                     img = pygame.image.load(img_path).convert_alpha()
                     img = pygame.transform.scale(img, (player.rect.width, player.rect.height))
                     skill_frames.append(img)
+                    
+                # print(f"成功加载皮肤3技能资源: {len(skill_frames)}帧")
             except Exception as e:
                 print(f"加载皮肤3技能图片时出错: {e}")
                 skill_frames = []
@@ -944,7 +871,7 @@ class Game:
                     running = False
                     self.current_screen = "level_complete"
                 else:
-                    card_message_timer = 60
+                    card_message_timer = 60  # 显示消息60帧(约1秒)
 
             # 绘制校卡提示消息
             if card_message_timer > 0:
@@ -989,7 +916,7 @@ class Game:
             # 技能系统逻辑
             current_time = pygame.time.get_ticks()
             
-            # 更新技能动画
+            # 更新技能动画（如果存在）
             if skill_animation and current_time - skill_start_time < skill_duration:
                 skill_animation.update(player.rect, player.facing_right)
                 self.bo=1
@@ -1054,6 +981,7 @@ class Game:
 
     #暂停菜单
     def pause_menu(self):
+        """暂停菜单"""
         paused = True
         result = None
 
@@ -1140,6 +1068,7 @@ class Game:
 
     #游戏结束界面，显示失败信息和选项，在这里面设置背景图
     def game_over_screen(self):
+        """游戏结束界面"""
         # 加载背景图（保持原比例，填充空白）
         try:
             original_bg = pygame.image.load(resource_path("resource/image/background/background5.webp")).convert()
@@ -1215,9 +1144,10 @@ class Game:
 
     #关卡完成界面，显示通关信息和统计，在这里面设置背景图
     def level_complete_screen(self):
+        """关卡完成界面"""
         # 加载背景图（保持原比例，填充空白）
         try:
-            original_bg = pygame.image.load(resource_path("resource/image/background/background3.webp")).convert()
+            original_bg = pygame.image.load(resource_path("resource/image/background/background6.webp")).convert()
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
             if bg_ratio > screen_ratio:
@@ -1265,7 +1195,7 @@ class Game:
             ]
             
             for i, stat in enumerate(stats):
-                text = self.font.render(stat, True, BLACK)
+                text = self.font.render(stat, True, WHITE)
                 text_rect = text.get_rect(center=(SCREEN_WIDTH//2, 250 + i*40))
                 self.screen.blit(text, text_rect)
             
@@ -1312,5 +1242,6 @@ class Game:
                             self.current_screen = "game"
                         else:
                             self.current_screen = "level_select"
+
 
 
