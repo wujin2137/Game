@@ -440,11 +440,11 @@ class Level:
         self.platforms.add(Platform(450, 350, 40, 15, "platform_1"))
         self.platforms.add(Platform(550, 300, 40, 15, "platform_1"))
         self.platforms.add(Platform(650, 250, 40, 15, "platform_1"))
-        self.platforms.add(Platform(450, 200, 60, 20, "platform_1"))
+        self.platforms.add(Platform(450, 200, 50, 20, "platform_1"))
         self.platforms.add(Platform(350, 150, 60, 20, "platform_1"))
         self.platforms.add(Platform(250, 100, 60, 20, "platform_1"))
         self.platforms.add(Platform(150, 50, 60, 20, "platform_1"))
-        self.platforms.add(Platform(550, 150, 60, 20, "platform_1"))
+        self.platforms.add(Platform(560, 150, 60, 20, "platform_1"))
         self.platforms.add(Platform(650, 100, 60, 20, "platform_1"))
 
         # 金币

@@ -28,7 +28,14 @@ class Player(pygame.sprite.Sprite):
     SKIN_PATHS = {
         "default": {
             "idle": resource_path("resource/image/skins/default_idle.png"),
-            "move": resource_path("resource/image/skins/default_move.png")
+            "move": [
+                resource_path("resource/image/skins/default_move_1.png"),
+                resource_path("resource/image/skins/default_move_2.png"),
+                resource_path("resource/image/skins/default_move_3.png"),
+                resource_path("resource/image/skins/default_move_4.png"),
+                resource_path("resource/image/skins/default_move_5.png"),
+                resource_path("resource/image/skins/default_move_6.png"),
+                ]
         },
         "皮肤1": {
             "idle": resource_path("resource/image/skins/skin_1_idle.png"),
@@ -100,31 +107,43 @@ class Player(pygame.sprite.Sprite):
         # 加载移动图片
         move_images = []
         try:
-            move_image = pygame.image.load(skin_data["move"]).convert_alpha()
-            original_width, original_height = move_image.get_size()
-            if original_height == 0:  # 防止除零错误
-                ratio = 1
+            # 检查移动资源是单个路径还是路径列表
+            if isinstance(skin_data["move"], list):
+                # 处理路径列表
+                for path in skin_data["move"]:
+                    try:
+                        move_image = pygame.image.load(path).convert_alpha()
+                        original_width, original_height = move_image.get_size()
+                        if original_height == 0:
+                            ratio = 1
+                        else:
+                            ratio = original_width / original_height
+                        new_width = int(self.height * ratio)
+                        scaled_move_image = pygame.transform.scale(move_image, (new_width, self.height))
+                        move_images.append(scaled_move_image)
+                    except Exception as e:
+                        print(f"加载移动动画帧失败: {e}")
+                        # 如果加载失败，创建一个默认帧
+                        default_frame = pygame.Surface((30, self.height))
+                        default_frame.fill((255, 100, 100))
+                        move_images.append(default_frame)
             else:
-                ratio = original_width / original_height
-            new_width = int(self.height * ratio)
-            scaled_move_image = pygame.transform.scale(move_image, (new_width, self.height))
-            move_images.append(scaled_move_image)
-        except:
-            try:
-                default_move = pygame.image.load(self.SKIN_PATHS["default"]["move"]).convert_alpha()
-                original_width, original_height = default_move.get_size()
-                if original_height == 0:  # 防止除零错误
+                # 处理单个路径
+                move_image = pygame.image.load(skin_data["move"]).convert_alpha()
+                original_width, original_height = move_image.get_size()
+                if original_height == 0:
                     ratio = 1
                 else:
                     ratio = original_width / original_height
                 new_width = int(self.height * ratio)
-                move_image = pygame.Surface((new_width, self.height))
-                move_image.fill((255, 100, 100))  # 默认颜色
-                move_images.append(move_image)
-            except:
-                move_image = pygame.Surface((30, self.height))
-                move_image.fill((255, 100, 100))  # 默认颜色
-                move_images.append(move_image)
+                scaled_move_image = pygame.transform.scale(move_image, (new_width, self.height))
+                move_images.append(scaled_move_image)
+        except Exception as e:
+            print(f"加载移动图片失败: {e}")
+            # 如果加载失败，创建一个默认帧
+            default_frame = pygame.Surface((30, self.height))
+            default_frame.fill((255, 100, 100))
+            move_images.append(default_frame)
 
         # 获取原始图像宽高比
         original_width, original_height = idle_image.get_size()
