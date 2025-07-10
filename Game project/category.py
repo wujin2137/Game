@@ -251,6 +251,9 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         if self.on_ground:
             self.vel_y = self.jump_strength
+            if self.skin_name== "皮肤1":
+                sound2 = pygame.mixer.Sound(resource_path("resource/sound/manbo.mp3"))
+                sound2.play()
 
     # 向左移动
     def move_left(self):

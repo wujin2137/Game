@@ -4,12 +4,18 @@ import sys
 from category import Player, GameState, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, BLACK, RED, GREEN, BLUE, YELLOW,SkillAnimation
 from level import Level
 
+
+
 # 定义 resource_path 函数
 def resource_path(relative_path):
+    """获取资源文件的绝对路径"""
     try:
+        # 如果程序被打包，获取打包后的资源路径
         base_path = sys._MEIPASS
     except Exception:
+        # 如果程序未打包，获取当前文件的目录
         base_path = os.path.abspath(".")
+
     return os.path.join(base_path, relative_path)
 
 class Game:
@@ -17,20 +23,6 @@ class Game:
     def __init__(self):
         pygame.init()
         pygame.font.init()
-        pygame.mixer.init()
-        # 加载音效
-        try:
-            # 背景音乐
-            self.bg_music = pygame.mixer.Sound(resource_path("resource/sound/background.mp3"))
-            # 死亡音效
-            self.death_sound = pygame.mixer.Sound(resource_path("resource/sound/death.wav"))
-            # 通关音效
-            self.level_complete_sound = pygame.mixer.Sound(resource_path("resource/sound/level_complete.wav"))
-        except Exception as e:
-            print(f"加载音效失败: {e}")
-            self.bg_music = None
-            self.death_sound = None
-            self.level_complete_sound = None
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("跑酷闯关游戏")
         self.clock = pygame.time.Clock()
@@ -100,9 +92,6 @@ class Game:
 
     #游戏主循环
     def run(self):
-        # 播放背景音乐（循环播放）
-        if self.bg_music:
-            self.bg_music.play(-1)  # -1 表示循环播放
         while self.running:
             if self.current_screen == "menu":
                 self.menu_screen()
@@ -268,7 +257,7 @@ class Game:
             
             # 按钮布局：每行5个，共2行（0-4第一行，5-9第二行）
             button_size = 90
-            margin = 40
+            margin = 20
             start_x = (SCREEN_WIDTH - (5 * button_size + 4 * margin)) // 2
             start_y = 160
             
@@ -439,17 +428,16 @@ class Game:
             skin_data = Player.SKIN_PATHS[skin_name]
             frames = []
             
-            try:
-                if isinstance(skin_data["idle"], str):
-                    frame = pygame.image.load(resource_path(skin_data["idle"])).convert_alpha()
-                else:
-                    frame = pygame.image.load(resource_path(skin_data["idle"][0])).convert_alpha()
-                frame = pygame.transform.scale(frame, (button_width - 20, button_height - 20))
-                frames.append(frame)
-            except:
-                frame = pygame.Surface((button_width - 20, button_height - 20))
-                frame.fill((255, 100, 100))
-                frames.append(frame)
+            # 检查移动资源是单张图片还是列表
+            if isinstance(skin_data["move"], list):
+                # 有多个移动帧，加载所有帧
+                for path in skin_data["move"]:
+                    try:
+                        frame = pygame.image.load(resource_path(path)).convert_alpha()
+                        frame = pygame.transform.scale(frame, (button_width - 20, button_height - 20))
+                        frames.append(frame)
+                    except:
+                        pass  # 如果加载失败，跳过该帧
             
             if not frames:
                 # 如果没有动画帧或加载失败，使用静止图像或默认图像
@@ -639,9 +627,10 @@ class Game:
     #游戏统计界面，显示游戏进度和成就，在这里面设置背景图
     def stats_screen(self):
         """游戏统计界面"""
+        
         # 加载背景图（保持原比例，填充空白）
         try:
-            original_bg = pygame.image.load(resource_path("resource/image/background/background3.webp")).convert()
+            original_bg = pygame.image.load(resource_path("resource/image/background/background1.webp")).convert()
             bg_ratio = original_bg.get_width() / original_bg.get_height()
             screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
             if bg_ratio > screen_ratio:
@@ -657,10 +646,6 @@ class Game:
         except:
             background = None
 
-        # 创建滚动变量
-        scroll_y = 0
-        content_height = 600  # 初始估计值，绘制时计算实际高度
-
         while self.current_screen == "stats":
             self.screen.fill(BLACK)
             if background:
@@ -668,22 +653,13 @@ class Game:
             else:
                 self.screen.fill(BLACK)
 
-            # 绘制半透明背景覆盖层
-            overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-            overlay.fill((0, 0, 0, 180))
-            self.screen.blit(overlay, (0, 0))
-
             # 绘制标题
             title_text = self.large_font.render("游戏统计", True, WHITE)
-            title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 50))
+            title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 100))
             self.screen.blit(title_text, title_rect)
 
-            # 创建内容表面（用于滚动）
-            content_surface = pygame.Surface((SCREEN_WIDTH - 40, content_height), pygame.SRCALPHA)
-            content_surface.fill((0, 0, 0, 0))
-
             # 绘制总统计
-            stats_y = 20
+            stats_y = 180
             total_texts = [
                 f"总积分: {self.game_state.total_score}",
                 f"总金币: {self.game_state.total_coins}",
@@ -692,130 +668,56 @@ class Game:
 
             for text in total_texts:
                 stats_surface = self.font.render(text, True, WHITE)
-                content_surface.blit(stats_surface, (20, stats_y))
+                self.screen.blit(stats_surface, (100, stats_y))
                 stats_y += 40
 
-            # 绘制关卡统计标题
-            level_title = self.font.render("关卡统计:", True, WHITE)
-            content_surface.blit(level_title, (20, stats_y + 20))
-            stats_y += 60
-
             # 绘制关卡统计
-            for level in range(10): 
-                level_key = str(level) 
-                if level_key in self.game_state.level_stats:
-                    stats = self.game_state.level_stats[level_key]
+            level_title = self.font.render("关卡统计:", True, WHITE)
+            self.screen.blit(level_title, (100, stats_y + 20))
+
+            stats_y += 60
+            for level in range(len(self.game_state.level_stats)):
+                if level in self.game_state.level_stats:
+                    stats = self.game_state.level_stats[level]
                     level_text = f"关卡 {level + 1}: 金币 {stats['coins']}, 时间 {stats['time']:.1f}秒, 积分 {stats['score']}"
                 else:
                     level_text = f"关卡 {level + 1}: 未完成"
 
                 level_surface = self.font.render(level_text, True, WHITE)
-                content_surface.blit(level_surface, (20, stats_y))
+                self.screen.blit(level_surface, (100, stats_y))
                 stats_y += 40
 
-            # 更新实际内容高度
-            content_height = stats_y + 20
-
-            # 创建带滚动条的显示区域
-            display_area = pygame.Rect(20, 100, SCREEN_WIDTH - 40, SCREEN_HEIGHT - 200)
-            clipped_surface = pygame.Surface((display_area.width, display_area.height), pygame.SRCALPHA)
-            clipped_surface.blit(content_surface, (0, -scroll_y))
-
-            # 绘制显示区域边框
-            pygame.draw.rect(self.screen, WHITE, display_area, 2)
-            self.screen.blit(clipped_surface, display_area.topleft)
-
-            # 绘制滚动条
-            if content_height > display_area.height:
-                scroll_ratio = display_area.height / content_height
-                scroll_bar_height = max(30, int(display_area.height * scroll_ratio))
-                scroll_pos_ratio = scroll_y / (content_height - display_area.height)
-                scroll_bar_y = display_area.y + int((display_area.height - scroll_bar_height) * scroll_pos_ratio)
-                
-                scroll_bar_rect = pygame.Rect(display_area.right - 10, scroll_bar_y, 8, scroll_bar_height)
-                pygame.draw.rect(self.screen, (200, 200, 200), scroll_bar_rect)
-                pygame.draw.rect(self.screen, WHITE, scroll_bar_rect, 1)
-
-            # 绘制按钮
-            button_width, button_height = 150, 50
-            button_y = SCREEN_HEIGHT - 80
-
             # 返回按钮
-            back_button = pygame.Rect((SCREEN_WIDTH - button_width) // 2 - 90, button_y, button_width, button_height)
-            back_color = RED if back_button.collidepoint(pygame.mouse.get_pos()) else (200, 0, 0)
-            pygame.draw.rect(self.screen, back_color, back_button)
+            back_button = pygame.Rect((SCREEN_WIDTH - 150) // 2, 500, 150, 50)
+            color = RED if back_button.collidepoint(pygame.mouse.get_pos()) else (200, 0, 0)
+            pygame.draw.rect(self.screen, color, back_button)
             pygame.draw.rect(self.screen, WHITE, back_button, 2)
+
             back_text = self.font.render("返回", True, WHITE)
-            self.screen.blit(back_text, back_text.get_rect(center=back_button.center))
+            back_rect = back_text.get_rect(center=back_button.center)
+            self.screen.blit(back_text, back_rect)
 
-            # 下载战绩按钮
-            download_button = pygame.Rect((SCREEN_WIDTH - button_width) // 2 + 90, button_y, button_width, button_height)
-            download_color = BLUE if download_button.collidepoint(pygame.mouse.get_pos()) else (0, 0, 200)
-            pygame.draw.rect(self.screen, download_color, download_button)
-            pygame.draw.rect(self.screen, WHITE, download_button, 2)
-            download_text = self.font.render("下载战绩", True, WHITE)
-            self.screen.blit(download_text, download_text.get_rect(center=download_button.center))
-
-            # 处理鼠标滚轮事件
-            mouse_pos = pygame.mouse.get_pos()
-            mouse_pressed = pygame.mouse.get_pressed()
-            
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.running = False
-                    self.current_screen = None
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 4:  # 滚轮上滚
-                        scroll_y = max(0, scroll_y - 20)
-                    elif event.button == 5:  # 滚轮下滚
-                        scroll_y = min(content_height - display_area.height, scroll_y + 20)
-                    elif back_button.collidepoint(event.pos):
-                        pygame.time.delay(200)
-                        self.current_screen = "menu"
-                    elif download_button.collidepoint(event.pos):
-                        pygame.time.delay(200)
-                        # 生成战绩文本
-                        stats_text = self.game_state.generate_stats_text()
-                        
-                        # 保存到文件
-                        try:
-                            with open(resource_path("saves/game_stats.txt"), "w", encoding="utf-8") as f:
-                                f.write(stats_text)
-                            
-                            # 显示下载成功消息
-                            success_text = self.font.render("战绩已保存到saves/game_stats.txt", True, RED)
-                            success_rect = success_text.get_rect(center=(SCREEN_WIDTH//2, 86))
-                            self.screen.blit(success_text, success_rect)
-                            pygame.display.flip()
-                            pygame.time.delay(2000)  # 显示2秒
-                        except Exception as e:
-                            print(f"保存战绩失败: {e}")
-                            error_text = self.font.render("保存失败!", True, RED)
-                            error_rect = error_text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT - 30))
-                            self.screen.blit(error_text, error_rect)
-                            pygame.display.flip()
-                            pygame.time.delay(2000)  # 显示2秒
+            if pygame.mouse.get_pressed()[0] and back_button.collidepoint(pygame.mouse.get_pos()):
+                pygame.time.delay(200)
+                self.current_screen = "menu"
 
             pygame.display.flip()
             self.clock.tick(60)
 
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                    self.current_screen = None
+
     #游戏主界面，处理游戏逻辑和绘制，///创建精灵组、游戏循环在此///，背景图在level.py设置
+# 游戏主界面，处理游戏逻辑和绘制，///创建精灵组、游戏循环在此///，背景图在level.py设置
+# 游戏主界面，处理游戏逻辑和绘制，///创建精灵组、游戏循环在此///，背景图在level.py设置
+# 游戏主界面，处理游戏逻辑和绘制，///创建精灵组、游戏循环在此///，背景图在level.py设置
     def game_screen(self):
         """游戏主界面"""
-
-        # 初始化变量
-        card_message_timer = 0
-
         # 加载关卡
         level = Level(self.current_level)
         total_coins_in_level = len(level.coins)  # 关卡初始金币总数
-        level_requires_card = False  # 标记关卡是否需要校卡
-
-        # 检查关卡是否需要校卡
-        for item in level.items:
-            if item.item_type == "card":
-                level_requires_card = True
-                break
 
         # 加载关卡背景
         level_background = level.load_background()
@@ -868,7 +770,7 @@ class Game:
                     img = pygame.transform.scale(img, (player.rect.width, player.rect.height))
                     skill_frames.append(img)
                     
-                # print(f"成功加载皮肤3技能资源: {len(skill_frames)}帧")
+                print(f"成功加载皮肤3技能资源: {len(skill_frames)}帧")
             except Exception as e:
                 print(f"加载皮肤3技能图片时出错: {e}")
                 skill_frames = []
@@ -901,7 +803,7 @@ class Game:
                         elif result == "restart":
                             running = False
                             self.game_screen()
-                    if event.key == pygame.K_SPACE or event.key == pygame.K_UP or event.key == pygame.K_w:
+                    if event.key == pygame.K_SPACE:
                         player.jump()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     # 技能触发逻辑
@@ -923,9 +825,9 @@ class Game:
 
             # 玩家移动控制
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            if keys[pygame.K_LEFT]:
                 player.move_left()
-            elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            elif keys[pygame.K_RIGHT]:
                 player.move_right()
             else:
                 player.stop()
@@ -937,27 +839,20 @@ class Game:
             coins_collected = total_coins_in_level - len(level.coins)
 
             # 障碍物碰撞处理
-            collided_obstacles = pygame.sprite.spritecollide(
-                player, level.obstacles, False, pygame.sprite.collide_mask
-            )
+            collided_obstacles = pygame.sprite.spritecollide(player, level.obstacles, False)
             for obstacle in collided_obstacles:
                 if self.game_state.selected_skin == "皮肤2" and obstacle.obstacle_type == "obstacle_2":
                     obstacle.rect.x += 50
+                    sound1 = pygame.mixer.Sound(resource_path("resource/sound/dayun.mp3"))
+                    sound1.play()
                     if obstacle.rect.x > SCREEN_WIDTH:
                         level.obstacles.remove(obstacle)
                         all_sprites.remove(obstacle)
                 elif self.game_state.selected_skin=="皮肤3" and obstacle.obstacle_type=="obstacle_1" and self.bo==1:
                     pass
                 elif not player.invincible:
-                    # 播放死亡音效
-                    if self.death_sound:
-                        self.death_sound.play()
                     running = False
                     self.current_screen = "game_over"
-
-            # 障碍物移动
-            for obstacle in level.obstacles:
-                obstacle.update()
 
             # 道具碰撞处理
             if hasattr(level, 'items'):
@@ -966,25 +861,10 @@ class Game:
 
             # 到达终点
             if level.goal and player.rect.colliderect(level.goal.rect):
-                # 播放通关音效
-                if self.level_complete_sound:
-                    self.level_complete_sound.play()
-                
-                # 检查是否需要校卡
-                if not level_requires_card or player.has_card:
-                    self.level_complete_coins = coins_collected
-                    self.level_complete_time = game_time
-                    running = False
-                    self.current_screen = "level_complete"
-                else:
-                    card_message_timer = 60  # 显示消息60帧(约1秒)
-
-            # 绘制校卡提示消息
-            if card_message_timer > 0:
-                card_message = self.large_font.render("你没有校卡，不得进校", True, RED)
-                message_rect = card_message.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
-                self.screen.blit(card_message, message_rect)
-                card_message_timer -= 1
+                self.level_complete_coins = coins_collected
+                self.level_complete_time = game_time
+                running = False
+                self.current_screen = "level_complete"
 
             # 超时或掉落处理
             if game_time > level.time_limit or player.rect.y > SCREEN_HEIGHT:
@@ -1085,7 +965,6 @@ class Game:
             self.clock.tick(60)
         # 技能动画精灵类
 
-
     #暂停菜单
     def pause_menu(self):
         """暂停菜单"""
@@ -1176,9 +1055,6 @@ class Game:
     #游戏结束界面，显示失败信息和选项，在这里面设置背景图
     def game_over_screen(self):
         """游戏结束界面"""
-        # 播放死亡音效（如果之前没有播放）
-        if self.death_sound and not self.death_sound.get_num_channels():
-            self.death_sound.play()
         # 加载背景图（保持原比例，填充空白）
         try:
             original_bg = pygame.image.load(resource_path("resource/image/background/background5.webp")).convert()
@@ -1255,9 +1131,6 @@ class Game:
     #关卡完成界面，显示通关信息和统计，在这里面设置背景图
     def level_complete_screen(self):
         """关卡完成界面"""
-        # 播放通关音效（如果之前没有播放）
-        if self.level_complete_sound and not self.level_complete_sound.get_num_channels():
-            self.level_complete_sound.play()
         # 加载背景图（保持原比例，填充空白）
         try:
             original_bg = pygame.image.load(resource_path("resource/image/background/background6.webp")).convert()
@@ -1283,8 +1156,8 @@ class Game:
             self.level_complete_time
         )
         
-        # 只有当完成的关卡是当前最高关卡时才解锁下一关
-        if self.current_level == self.game_state.current_level and self.current_level < 9:  # 假设总共有10个关卡
+        # 解锁下一个关卡
+        if self.current_level < 9:  # 假设总共有10个关卡
             self.game_state.current_level = self.current_level + 1
             self.game_state.save_game_data()
 
@@ -1335,6 +1208,7 @@ class Game:
                     pygame.time.delay(200)
                     if button["action"] == "next" and self.current_level < 9:  # 假设总共有10个关卡
                         self.current_level += 1
+                        self.game_state.current_level = self.current_level  # 更新 game_state 的当前关卡
                         self.current_screen = "game"
                     else:
                         self.current_screen = "menu"
@@ -1352,9 +1226,7 @@ class Game:
                     elif event.key == pygame.K_RETURN:
                         if self.current_level < 9:  # 假设总共有10个关卡
                             self.current_level += 1
+                            self.game_state.current_level = self.current_level  # 更新 game_state 的当前关卡
                             self.current_screen = "game"
                         else:
                             self.current_screen = "level_select"
-
-
-
