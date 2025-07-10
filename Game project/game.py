@@ -268,7 +268,7 @@ class Game:
             
             # 按钮布局：每行5个，共2行（0-4第一行，5-9第二行）
             button_size = 90
-            margin = 20
+            margin = 40
             start_x = (SCREEN_WIDTH - (5 * button_size + 4 * margin)) // 2
             start_y = 160
             
@@ -937,7 +937,9 @@ class Game:
             coins_collected = total_coins_in_level - len(level.coins)
 
             # 障碍物碰撞处理
-            collided_obstacles = pygame.sprite.spritecollide(player, level.obstacles, False)
+            collided_obstacles = pygame.sprite.spritecollide(
+                player, level.obstacles, False, pygame.sprite.collide_mask
+            )
             for obstacle in collided_obstacles:
                 if self.game_state.selected_skin == "皮肤2" and obstacle.obstacle_type == "obstacle_2":
                     obstacle.rect.x += 50

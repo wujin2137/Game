@@ -73,6 +73,7 @@ class Player(pygame.sprite.Sprite):
         self.image = self.idle_image
 
         self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)    #遮罩
         self.rect.x = x
         self.rect.y = y
         self.vel_x = 0
@@ -404,6 +405,7 @@ class Obstacle(pygame.sprite.Sprite):
             self.image = self._create_default_icon()
             
         self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)    #遮罩
         self.rect.x = x
         self.rect.y = y
         self.original_x = x  # 原始x坐标
