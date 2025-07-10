@@ -439,16 +439,17 @@ class Game:
             skin_data = Player.SKIN_PATHS[skin_name]
             frames = []
             
-            # 检查移动资源是单张图片还是列表
-            if isinstance(skin_data["move"], list):
-                # 有多个移动帧，加载所有帧
-                for path in skin_data["move"]:
-                    try:
-                        frame = pygame.image.load(resource_path(path)).convert_alpha()
-                        frame = pygame.transform.scale(frame, (button_width - 20, button_height - 20))
-                        frames.append(frame)
-                    except:
-                        pass  # 如果加载失败，跳过该帧
+            try:
+                if isinstance(skin_data["idle"], str):
+                    frame = pygame.image.load(resource_path(skin_data["idle"])).convert_alpha()
+                else:
+                    frame = pygame.image.load(resource_path(skin_data["idle"][0])).convert_alpha()
+                frame = pygame.transform.scale(frame, (button_width - 20, button_height - 20))
+                frames.append(frame)
+            except:
+                frame = pygame.Surface((button_width - 20, button_height - 20))
+                frame.fill((255, 100, 100))
+                frames.append(frame)
             
             if not frames:
                 # 如果没有动画帧或加载失败，使用静止图像或默认图像
